@@ -25,10 +25,10 @@ setup(name='opencore.js',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'setuptools',
-          # -*- Extra requirements: -*-
+          'topp.utils',
       ],
       entry_points="""
-      # -*- Entry points: -*-
+      [distutils.commands]
+      zinstall = topp.utils.setup_command:zinstall      
       """,
       )
