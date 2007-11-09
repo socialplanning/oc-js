@@ -1,8 +1,9 @@
 <configure xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
+
   <browser:resourceDirectory
-    name="javascripts"
-    directory="ocjs"
+    name="oc-js"
+    directory="oc-js"
     />
 
   <browser:resourceDirectory
@@ -16,7 +17,7 @@
     />
 
   <browser:resourceDirectory
-    name="ext"
+    name="firebug"
     directory="thirdparty/firebug"
     />
 
