@@ -23,7 +23,7 @@ setup(name='opencore.js',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'topp.utils>=2.8.9',
+          'topp.utils>=0.2.8.9',
       ],
       entry_points="""
       [distutils.commands]
