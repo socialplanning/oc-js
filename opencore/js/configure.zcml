@@ -1,0 +1,23 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+  <browser:resourceDirectory
+    name="javascripts"
+    directory="ocjs"
+    />
+
+  <browser:resourceDirectory
+    name="xinha"
+    directory="thirdparty/xinha"
+    />
+
+  <browser:resourceDirectory
+    name="ext"
+    directory="thirdparty/yui-ext"
+    />
+
+  <browser:resourceDirectory
+    name="ext"
+    directory="thirdparty/firebug"
+    />
+
+</configure>
