@@ -9,8 +9,6 @@ setup(name='opencore.js',
 """,
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
-        "Framework :: Plone",
-        "Framework :: Zope2",
         "Framework :: Zope3",
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -25,7 +23,7 @@ setup(name='opencore.js',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'topp.utils',
+          'topp.utils>=2.8.9',
       ],
       entry_points="""
       [distutils.commands]
