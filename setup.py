@@ -2,11 +2,14 @@ from setuptools import setup, find_packages
 
 version = '0.1'
 
+f = open('README.txt')
+readme = "".join(f.readlines())
+f.close()
+
 setup(name='opencore.js',
       version=version,
       description="javascript and zcml registrations required for opencore",
-      long_description="""\
-""",
+      long_description=readme,
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Zope3",
