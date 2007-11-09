@@ -6,14 +6,15 @@ f = open('README.txt')
 readme = "".join(f.readlines())
 f.close()
 
-setup(name='opencore.js',
+setup(name='oc-js',
       version=version,
       description="javascript and zcml registrations required for opencore",
       long_description=readme,
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Zope3",
-        "Programming Language :: Python",
+        "Framework :: YUI-ext",
+        "Programming Language :: Javascript",
         "Topic :: Software Development :: Libraries :: Python Modules",
         ],
       keywords='javascript zcml',
