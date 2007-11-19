@@ -1211,6 +1211,7 @@ OC.FeatureletUndeleteWarner = function(extEl) {
   var container = extEl;
   var checkbox = Ext.get(container.dom.getElementsByTagName('input')[0]);
   var warning = Ext.get(Ext.query('.oc-warning', container.dom)[0]);
+
   
   //check refs
   if (!checkbox || !container || !warning) {
@@ -1475,24 +1476,30 @@ OC.ConfirmProjectDelete = function(extEl) {
 
   //get refs
   var button = extEl;
-  
+  var container = extEl.parentNode;
+  var warning = Ext.query('#oc-project-delete-warning', container)[0].textContent;
+
   //check refs
   if (!button) {
     return;
   }
-  
-  extEl.on('click', function(e, el) { 
-          //YAHOO.util.Event.preventDefault(e);
-          var msg = "Project deletion is permanent and irreversible <br /><br /> Are you sure you want to remove this project?<br />";
-          Ext.MessageBox.confirm('Confirm', msg, _callback(e));
-   });
 
   function _callback(e) {
       return function (conf_id) {
-          if (conf_id != 'yes'){
-              YAHOO.util.Event.preventDefault(e);
+          console.info(e);
+          if (conf_id == 'no'){
+              YAHOO.util.Event.stopEvent(e);
+          } else {
+              console.info('delete');
           }
       }
   }
+
+  function _catch_click(e, el) { 
+      Ext.MessageBox.confirm('Confirm', warning, _callback);
+  }
+
+  extEl.on('click', _catch_click);
+
 
 }
