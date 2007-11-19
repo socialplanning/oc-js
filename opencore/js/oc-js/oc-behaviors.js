@@ -43,7 +43,9 @@ OC.liveElementKey.Class = {
     'oc-js-actionPost'       : "ActionLink",
     'oc-js-actionButton'     : "ActionButton",
     'oc-js-actionSelect'     : "ActionSelect",
-    'oc-js-liveValidate'     : "LiveValidatee",
+    'oc-js-liveValidate'     : "LiveValidate",
+    'oc-js-template'         : "Template",
+    'oc-js-gmap'             : "GMap",
     "oc-js-closeable"        : "CloseButton",
     "oc-directEdit"          : "DirectEdit",
     "oc-confirmProjectDelete": "ConfirmProjectDelete"
@@ -71,16 +73,15 @@ OC.breatheLife = function(newNode, force) {
     // set scope
     if (!newNode) {
       targetNode = document.body;
-    } else {
+    } else if (newNode.dom) {
       // accept HTML element or Ext Element
-      if (newNode.dom)
-          targetNode = newNode.dom;
-      else 
-          targetNode = newNode; 
+      targetNode = newNode.dom;
+    } else {
+      targetNode = newNode; 
     }
     
     // Build regexes out of our class list.  This allows
-    // us to have one very quick lookup un elements to
+    // us to have one very quick lookup on elements to
     // prevent unnecessary processing.
     var classRegexString = '';
     for (var key in this.liveElementKey.Class) {
@@ -330,16 +331,9 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	    
 	case "replace":
 	    var html, effects;	    	    
-	    if( typeof command == "string" ) { // for backcompability with existing code. consider deprecated.		
-		html = command;
-		if( action == "update" )
-		    effects = "highlight";
-      else if( action == "uploadAndUpdate" )
-		    effects = "fadeIn";
-	    } else if( typeof command == "object" ) {
         effects = command.effects;
         html = command.html;
-	    }
+
 	    OC.debug("REPLACE " + elId + " with " + html + " using effect " + effects);
 	    
 	    html = Ext.util.Format.trim(html);
@@ -575,8 +569,9 @@ OC.ActionButton = function(extEl) {
      
      try { this.button.dom.value = "Please wait..."; this.button.dom.disabled = true; } catch(err) { OC.debug(err); }
 	   
-	   OC.debug("_actionButtonClick");
+	 OC.debug("_actionButtonClick");
     
+     // Why is the event stopped ???
      YAHOO.util.Event.stopEvent(e);
       if (isUpload) {
           YAHOO.util.Connect.setForm(form.dom, true);
@@ -605,6 +600,13 @@ OC.ActionButton = function(extEl) {
      }
 
     }
+
+    // This is a submit button to allow this form to work without javascript.  Unfortunately,
+    // having a submit button with a click handler breaks the enter button functionality.
+    // Since we know javascript is enabled (We're running, right?), we will turn this into
+    // a regular button.
+    this.button.dom.type = 'button';
+
     this.button.on('click', _actionButtonClick, this);
     
     // pass back element to OC.LiveElements
@@ -647,10 +649,10 @@ OC.CheckAll = function(extEl) {
 
 /*
   #
-  # Live Validatee
+  # Live Validate
   #
 */
-OC.LiveValidatee = function(extEl) {
+OC.LiveValidate = function(extEl) {
     // get refs
     var field = extEl;
     var form = field.up('form');
@@ -1503,3 +1505,182 @@ OC.ConfirmProjectDelete = function(extEl) {
 
 
 }
+
+/* 
+   #
+   # Content Template
+   #
+*/
+OC.Template = function(extEl) {
+    // get refs
+    anchor = extEl;
+    
+    if (!anchor) {
+         OC.debug("Template: Could not find template anchor");
+    } 
+
+    template = anchor.id.split('oc-template-')[1];
+
+    if (undefined == template) {
+        OC.debug("Template: No template referenced by id");
+    }
+
+    var templateHtml = YAHOO.util.Connect.asyncRequest("GET", '++resource++' + template, {
+        success: OC.Callbacks.afterAjaxSuccess, 
+        failure: OC.Callbacks.afterAjaxFailure,
+        scope: this 
+    });
+};
+
+/* 
+   #
+   # GMap Div
+   #
+*/
+OC.GMap = function(extEl) {
+    // Verify JS support
+    if ((undefined == GBrowserIsCompatible) || (!GBrowserIsCompatible())){
+        OC.debug("GMap: Google Map API not loaded or unsupported browser");
+        return;
+    }
+
+    // Get required elements
+    var mapdiv = extEl;
+    
+    if (!mapdiv) {
+        OC.debug("GMap: Could not find map div");
+        return;
+    } 
+
+    // Look for an existing latitude/longitude pair.
+    var input_latitude = Ext.get(mapdiv.id + '-latitude');
+    var input_longitude = Ext.get(mapdiv.id + '-longitude');
+
+    // If we have only one coordinate, we can't properly proceed
+    if ((input_latitude && !input_longitude) || (input_longitude && !input_latitude)) {
+        OC.debug("GMap: Missing " + (input_latitude ? 'longitude' : 'latitude') + ' coordinate');
+        return;
+    }
+
+    // If we don't have the coordinate inputs, we will create them.  If we do have elements
+    // with inputs, we'll make sure they're elements we can use as inputs.
+    if (!input_latitude) {
+        var input_template = new Ext.DomHelper.Template('<input type="hidden" id="{0}" name="{0}" />');
+
+        input_latitude = input_template.insertBefore(mapdiv.dom, [mapdiv.id + '-latitude'], true);
+        input_longitude = input_template.insertBefore(mapdiv.dom, [mapdiv.id + '-longitude'], true);
+
+    } else if (('input' != input_latitude.dom.tagName.toLowerCase()) || ('input' != input_longitude.dom.tagName.toLowerCase()) ||
+        !(input_latitude.dom.type in {hidden:'', text:'', textarea:''}) ||
+        !(input_latitude.dom.type in {hidden:'', text:'', textarea:''})) {
+
+        // The elements wre either not input fields, or input fields that can't hold our
+        // latitude and longitude values.
+        OC.debug("GMap: Bad initialization coordinates");
+        return;
+    }
+
+
+    // Create the text control used to update the map
+    var control_text = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'text'}, true);
+    var control_button = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'button', value: 'Go'}, true);
+    Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'br'});
+    var control_error = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'span', cls: 'oc-form-error'}, true);
+
+    // If we have a parent form, we'll put in a submit blocker when the text control has focus
+    var parent_form = mapdiv.up('form');
+
+    // Function that takes a geocoder response and adjusts the map accordingly
+    var updateMap = function(response) {
+      if (!response || response.Status.code != 200) {
+        control_error.update("Sorry, we were unable to find that address on the map");
+      } else {
+        map.clearOverlays();
+        control_error.update('');
+        var place = response.Placemark[0];
+        var point = new GLatLng(place.Point.coordinates[1],
+                            place.Point.coordinates[0]);
+        var marker = new GMarker(point, {draggable: true});
+
+        input_latitude.dom.value = point.lat();
+        input_longitude.dom.value = point.lng();
+
+        GEvent.addListener(marker, 'dragstart', function() {
+            map.closeInfoWindow();
+        });
+    
+        GEvent.addListener(marker, 'dragend', function() {
+            control_error.update('');
+            point = marker.getPoint();
+            input_latitude.dom.value = point.lat();
+            input_longitude.dom.value = point.lng();
+        });
+
+        map.addOverlay(marker);
+        map.setCenter(point, 15);
+      }
+    }
+
+    // We need a function that will take the desired text input, and submit it to Google
+    // Maps.  Once we have it, we will set it up so that a click of the button or hitting
+    // enter will perform the work.  In order to handle pressing enter, whenever the text
+    // area has focus, we install a new submit handler for the parent form which cancels the
+    // submit and instead performs the geocoding.  We remove this handler whenever the
+    // text control loses focus.
+    control_button.geocode = function() {
+        geocoder.getLocations(control_text.dom.value, updateMap);
+    }
+
+    // Install click handler for the button
+    control_button.addListener({scope: this,
+        'click': control_button.geocode
+    });
+
+    // Install onfocus and onblur handlers for the text control to handle the enter key
+    // if there is a containing form.
+    if (parent_form) {
+        control_text.addListener({scope: this,
+            'focus': function() {
+                if (undefined == parent_form.blocker) {
+                    parent_form.blocker = function(e) {
+                        control_button.geocode();
+                    }
+                }
+                parent_form.addListener({scope: this,
+                    'submit': parent_form.blocker,
+                    stopEvent: true});
+
+                var test = 'text';
+            },
+            'blur': function() {
+                parent_form.removeListener('submit', parent_form.blocker);
+            }
+        });
+    }
+
+    var map = new GMap2(document.getElementById(mapdiv.id));
+    map.addControl(new GLargeMapControl());
+    map.enableScrollWheelZoom();
+
+    // Try to get initialization coordinates
+    var lat = input_latitude.getValue();
+    var lon = input_longitude.getValue();
+
+    if ((0 == lat.length) || (0 == lon.length)) {
+        // Lat/Lon of TOPP
+        var center = new GLatLng(40.738067, -74.006952);
+    } else {
+        // We have preexisting coordinates, so we'll make a marker.
+        var center = new GLatLng(lat, lon);
+        var marker = new GMarker(center, {draggable: true});
+    }
+
+    map.setCenter(center, 13);
+
+    if (marker) {
+        map.addOverlay(marker);
+    }
+
+    var geocoder = new GClientGeocoder();
+};
+
