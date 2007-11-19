@@ -1488,9 +1488,8 @@ OC.ConfirmProjectDelete = function(extEl) {
 
   function _callback(e) {
       return function (conf_id) {
-          console.info(e);
           if (conf_id == 'no'){
-              YAHOO.util.Event.stopEvent(e);
+              e.preventDefault();
           } else {
               console.info('delete');
           }
@@ -1498,12 +1497,10 @@ OC.ConfirmProjectDelete = function(extEl) {
   }
 
   function _catch_click(e, el) { 
-      Ext.MessageBox.confirm('Confirm', warning, _callback);
+      //YAHOO.util.Event.preventDefault(e);
+      Ext.MessageBox.confirm('Confirm', warning, _callback(e));
   }
-
   extEl.on('click', _catch_click);
-
-
 }
 
 /* 
