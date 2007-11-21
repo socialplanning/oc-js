@@ -454,8 +454,7 @@ OC.ActionLink = function(extEl) {
     if (link.hasClass('oc-js-confirm')) {
         link.on('click', function(e, el, o) {
             e.stopEvent();
-            el = Ext.get(el);
-            var message = el.child('span')
+            var message = Ext.get(el).child('span')
             Ext.MessageBox.confirm('Confirm', message.dom.innerHTML || 'Are you sure?', function(response) {
                 if ('yes' == response) {
                     that['_doAction'] = _doAction;
