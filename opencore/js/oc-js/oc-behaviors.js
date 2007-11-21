@@ -413,7 +413,6 @@ OC.ActionLink = function(extEl) {
     link = extEl;
     this.button = link; /* for ajax callback */
     this.origButtonValue = this.button.dom.innerHTML; /* for ajax callback */
-    var that = this; /* For scope adjustment */
     
     if (!link) {
 	     OC.debug("ActionLink: Could not get refs");
@@ -457,10 +456,10 @@ OC.ActionLink = function(extEl) {
             var message = Ext.get(el).child('span')
             Ext.MessageBox.confirm('Confirm', message.dom.innerHTML || 'Are you sure?', function(response) {
                 if ('yes' == response) {
-                    that['_doAction'] = _doAction;
-                    that._doAction(e, el, o);
+                    this['_doAction'] = _doAction;
+                    this._doAction(e, el, o);
                 }
-            });
+            }, this);
             return false;
         }, this);
     } else {
