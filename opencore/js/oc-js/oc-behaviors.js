@@ -413,6 +413,7 @@ OC.ActionLink = function(extEl) {
     link = extEl;
     this.button = link; /* for ajax callback */
     this.origButtonValue = this.button.dom.innerHTML; /* for ajax callback */
+    var that = this; /* For scope adjustment */
     
     if (!link) {
 	     OC.debug("ActionLink: Could not get refs");
@@ -449,7 +450,23 @@ OC.ActionLink = function(extEl) {
         	    }, requestData);
         }
     }
-    link.on('click', _doAction, this);
+
+    if (link.hasClass('oc-js-confirm')) {
+        link.on('click', function(e, el, o) {
+            e.stopEvent();
+            el = Ext.get(el);
+            var message = el.child('span')
+            Ext.MessageBox.confirm('Confirm', message.dom.innerHTML || 'Are you sure?', function(response) {
+                if ('yes' == response) {
+                    that['_doAction'] = _doAction;
+                    that._doAction(e, el, o);
+                }
+            });
+            return false;
+        }, this);
+    } else {
+        link.on('click', _doAction, this);
+    }
     
     // pass back element to OC.LiveElements
     return this;
