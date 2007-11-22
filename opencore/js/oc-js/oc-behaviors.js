@@ -1205,6 +1205,9 @@ OC.CloseButton = function(extEl) {
     close_button.dom.title = 'close';
     close_button.addClass('oc-closeButton');
     container.dom.appendChild(close_button.dom);
+
+    // XXX do only psms use this?
+    container.fadeIn();
     container.setVisibilityMode(Ext.Element.DISPLAY);
     
     //behaviors
@@ -1213,7 +1216,7 @@ OC.CloseButton = function(extEl) {
         YAHOO.util.Event.stopEvent(e);
     }
     close_button.on('click', _closeButtonClick, this);
-    
+
     return this;
 };
 
