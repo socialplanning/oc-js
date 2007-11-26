@@ -397,6 +397,30 @@ OC.Callbacks.afterAjaxFailure = function(o) {
     //OC.psm('There was a problem with the AJAX Request.  Octopus!', 'error');
 };
 
+/* 
+   #
+   # Event wrapper to handle confirmation...
+   #
+*/
+
+OC.Confirm = function(listener) {
+    return function(e, el, o) {
+        if (!el.className.match (/\boc-js-confirm\b/)) {
+            return listener();
+        }
+        e.stopEvent();
+        var message = Ext.get(el).child('span.oc-confirm')
+        Ext.MessageBox.confirm('Confirm', message && message.dom.innerHTML || 'Are you sure?', function(response) {
+            if ('yes' == response) {
+                this['_confirm_scope'] = listener;
+                this._confirm_scope(e, el, o);
+                delete this._confirm_scope;
+            }
+        }, this);
+        return false;
+    }
+}
+
 /*
   #------------------------------------------------------------------------
   # Classes - will become liveElement objects
@@ -450,21 +474,7 @@ OC.ActionLink = function(extEl) {
         }
     }
 
-    if (link.hasClass('oc-js-confirm')) {
-        link.on('click', function(e, el, o) {
-            e.stopEvent();
-            var message = Ext.get(el).child('span')
-            Ext.MessageBox.confirm('Confirm', message.dom.innerHTML || 'Are you sure?', function(response) {
-                if ('yes' == response) {
-                    this['_doAction'] = _doAction;
-                    this._doAction(e, el, o);
-                }
-            }, this);
-            return false;
-        }, this);
-    } else {
-        link.on('click', _doAction, this);
-    }
+    link.on('click', OC.Confirm(_doAction), this);
     
     // pass back element to OC.LiveElements
     return this;
