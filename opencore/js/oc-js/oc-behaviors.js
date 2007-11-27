@@ -43,6 +43,7 @@ OC.liveElementKey.Class = {
     'oc-js-actionPost'       : "ActionLink",
     'oc-js-actionButton'     : "ActionButton",
     'oc-js-actionSelect'     : "ActionSelect",
+    'oc-js-formConfirm'      : "FormConfirm",
     'oc-js-liveValidate'     : "LiveValidate",
     'oc-js-template'         : "Template",
     'oc-js-gmap'             : "GMap",
@@ -409,7 +410,7 @@ OC.Confirm = function(listener) {
             return listener(e, el, o);
         }
         e && e.stopEvent();
-        var message = Ext.get(el).child('span.oc-confirm')
+        var message = Ext.get(el).down('span.oc-confirm')
         Ext.MessageBox.confirm('Confirm', message && message.dom.innerHTML || 'Are you sure?', function(response) {
             if ('yes' == response) {
                 this._confirm_scope = listener;
@@ -426,6 +427,48 @@ OC.Confirm = function(listener) {
   # Classes - will become liveElement objects
   #------------------------------------------------------------------------
 */
+
+/* 
+   #
+   # Form submission wrapper to provide non browser modal confirm
+   #
+*/
+
+OC.FormConfirm = function(extEl) {
+    var form = extEl;
+
+    if (!form || !form.dom || form.dom.tagName != 'FORM') {
+        OC.debug('FormConfirm: invalid form reference');
+        return;
+    }
+
+    // Add click handlers to the submit buttons to store which
+    // button triggers the form.
+    var buttons = Ext.DomQuery.select('input[type=submit]', form.dom);
+    for (var index = 0; index < buttons.length; ++index) {
+        Ext.get(buttons[index]).on('click', function(e, el, o) { form._confirm_trigger = el.dom || el;}, this);
+    }
+
+    // Set up the first submit button as the default handler, as browsers do.
+    if (buttons[0]) {
+        form._confirm_trigger = buttons[0];
+    }
+
+    form.on('submit', function(e, el, o) {
+        if (form.confirmed) {
+            return true;
+        }
+        e.stopEvent();
+        var message = Ext.get(el).down('span.oc-confirm')
+        Ext.MessageBox.confirm('Confirm', message && message.dom.innerHTML || 'Are you sure?', function(response) {
+            if ('yes' == response) {
+                form.confirmed = true;
+                form._confirm_trigger.click();
+            }
+        }, this);
+        return false;
+    }, this);
+}
 
 /* 
    #
