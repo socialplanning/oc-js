@@ -818,7 +818,7 @@ var XinhaConfig = {
                         return false;
                       }
                      },
-	'Pre-formatted' : 'pre',
+	'Pre-formatted' : 'pre'
     },
     filters : {
 	'tidy_handler' : null
