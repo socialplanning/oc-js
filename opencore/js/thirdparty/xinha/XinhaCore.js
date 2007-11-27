@@ -1494,12 +1494,12 @@ Xinha.makeBtnImg = function(imgDef, doc)
   if (imgText) {
       // store image directly as property to let
       // caller know to append a text node
-      i_contain.imgText = imgText
+      i_contain.imgText = imgText;
 
-      i_contain.style.position = null;
-      i_contain.style.overflow = null;
-      i_contain.style.width = null;
-      i_contain.style.height = null;
+      i_contain.style.position = '';
+      i_contain.style.overflow = '';
+      i_contain.style.width = '';
+      i_contain.style.height = '';
       i_contain.style.display = 'inline';
       i_contain.style.paddingRight = '0.5em';
   }
