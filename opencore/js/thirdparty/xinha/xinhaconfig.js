@@ -846,12 +846,10 @@ var XinhaConfig = {
         ["justifyleft","justifycenter","justifyright","justifyfull"],
         ["insertorderedlist","insertunorderedlist"],
         ["outdent","indent"],
-        ["createinternallink"],
         ["toggleborders"],
-        ["insertimage"],
         ["htmlmode"],
         ["linebreak"],
-        ["inserttable", "toggleborders"]
+        ["createinternallink", "insertimage", "inserttable", "toggleborders"]
     ],
     width : '694'
   },
