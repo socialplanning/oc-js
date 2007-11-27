@@ -407,7 +407,10 @@ OC.Callbacks.afterAjaxFailure = function(o) {
 OC.Confirm = function(listener) {
     return function(e, el, o) {
         if (!el.className.match (/\boc-js-confirm\b/)) {
-            return listener(e, el, o);
+            this._confirm_scope = listener;
+            var result = this._confirm_scope(e, el, o);
+            delete this._confirm_scope;
+            return result
         }
         e && e.stopEvent();
         var message = Ext.get(el).down('span.oc-confirm')
@@ -492,7 +495,7 @@ OC.ActionLink = function(extEl) {
     }
 
     function _doAction(e, el, o) {
-    	YAHOO.util.Event.stopEvent(e);
+    	e.stopEvent();
     	
     	// get action/href & split action from params
     	var action = el.href.split("?")[0];
