@@ -817,7 +817,8 @@ var XinhaConfig = {
                         }
                         return false;
                       }
-                     }
+                     },
+	'Pre-formatted' : 'pre',
     },
     filters : {
 	'tidy_handler' : null
