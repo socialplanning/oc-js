@@ -406,13 +406,13 @@ OC.Callbacks.afterAjaxFailure = function(o) {
 OC.Confirm = function(listener) {
     return function(e, el, o) {
         if (!el.className.match (/\boc-js-confirm\b/)) {
-            return listener();
+            return listener(e, el, o);
         }
-        e.stopEvent();
+        e && e.stopEvent();
         var message = Ext.get(el).child('span.oc-confirm')
         Ext.MessageBox.confirm('Confirm', message && message.dom.innerHTML || 'Are you sure?', function(response) {
             if ('yes' == response) {
-                this['_confirm_scope'] = listener;
+                this._confirm_scope = listener;
                 this._confirm_scope(e, el, o);
                 delete this._confirm_scope;
             }
@@ -532,7 +532,7 @@ OC.ActionSelect = function(extEl) {
         // restore original task element name
         submit.dom.name = orig_task;
     }
-    select.on('change', _doAction, this);
+    select.on('change', OC.Confirm(_doAction), this);
     
     function _hideParentForm(e, el) {
       if (liveEdit.isOpen()) {
@@ -632,7 +632,7 @@ OC.ActionButton = function(extEl) {
     // a regular button.
     this.button.dom.type = 'button';
 
-    this.button.on('click', _actionButtonClick, this);
+    this.button.on('click', OC.Confirm(_actionButtonClick), this);
     
     // pass back element to OC.LiveElements
     return this;
@@ -826,7 +826,7 @@ OC.UploadForm = function(extEl) {
         _startLoading(); 
 	
     }
-    form.on('submit', _formSubmit, this);
+    form.on('submit', OC.Confirm(_formSubmit), this);
     
     // after request
     function _afterUpload(o) {
@@ -1290,7 +1290,7 @@ OC.AutoSelect = function(extEl) {
     function _selectChange(e, el, o) {
         form.submit();
     } 
-    select.on('change', _selectChange, this);
+    select.on('change', OC.Confirm(_selectChange), this);
     
     return this;
 };
