@@ -570,8 +570,10 @@ Xinha.Config = function()
 
     inserthorizontalrule: [ "Horizontal Rule", ["ed_buttons_main.gif",6,0], false, function(e) { e.execCommand("inserthorizontalrule"); } ],
     createlink: [ "Insert Web Link", ["ed_buttons_main.gif",6,1], false, function(e) { e._createLink(); } ],
-    insertimage: [ "Insert/Modify Image", ["ed_buttons_main.gif",6,3], false, function(e) { e.execCommand("insertimage"); } ],
-    inserttable: [ "Insert Table", ["ed_buttons_main.gif",6,2], false, function(e) { e.execCommand("inserttable"); } ],
+    //insertimage: [ "Insert/Modify Image", ["ed_buttons_main.gif",6,3], false, function(e) { e.execCommand("insertimage"); } ],
+    insertimage: [ "Insert/Modify Image", 'image.gif', false, function(e) { e.execCommand("insertimage"); } ],
+    //inserttable: [ "Insert Table", ["ed_buttons_main.gif",6,2], false, function(e) { e.execCommand("inserttable"); } ],
+    inserttable: [ "Insert Table", 'table.gif', false, function(e) { e.execCommand("inserttable"); } ],
 
     htmlmode: [ "Toggle HTML Source", ["ed_buttons_main.gif",7,0], true, function(e) { e.execCommand("htmlmode"); } ],
     toggleborders: [ "Toggle Borders", ["ed_buttons_main.gif",7,2], false, function(e) { e._toggleBorders(); } ],
