@@ -835,7 +835,7 @@ var XinhaConfig = {
       'TableOperations'
     ],
     showLoading : false,
-    statusBar : true,
+    statusBar : false,
     SuperClean : {
 	'filters' : { 'tidy' : true },
 	'show_dialog' : false
