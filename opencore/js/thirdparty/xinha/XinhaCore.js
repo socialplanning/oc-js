@@ -1325,6 +1325,13 @@ Xinha.prototype._createToolbar1 = function (editor, toolbar, tb_objects)
           img.style.left = '0px';
         }
       };
+
+      // check if we need to append a text node to the element
+      if (i_contain.imgText) {
+          var txtNode = document.createTextNode(i_contain.imgText);
+          el.appendChild(txtNode);
+          el.style.width = 'auto';
+      }
       
     }
     else if( !el )
@@ -1396,6 +1403,16 @@ Xinha.prototype._createToolbar1 = function (editor, toolbar, tb_objects)
   return toolbar;
 };
 
+//XXX this should move to configuration
+// I tried setting it up, but couldn't get Xinha to access it
+// from the context that it was in
+buttonTexts = {
+    '/++resource++xinha/images/table.gif': 'Table',
+    '/++resource++xinha/images/link.gif': 'Link',
+    '/++resource++xinha/images/image.gif': 'Image'
+    };
+
+
 // @todo : is this some kind of test not finished ?
 //         Why the hell this is not in the config object ?
 var use_clone_img = false;
@@ -1429,6 +1446,7 @@ Xinha.makeBtnImg = function(imgDef, doc)
   i_contain.className = 'buttonImageContainer';
 
   var img = null;
+  var imgText = null;
   if ( typeof imgDef == 'string' )
   {
     if ( doc._xinhaImgCache[imgDef] )
@@ -1439,6 +1457,7 @@ Xinha.makeBtnImg = function(imgDef, doc)
     {
       img = doc.createElement("img");
       img.src = imgDef;
+      imgText = buttonTexts[imgDef];
       img.style.width = "18px";
       img.style.height = "18px";
       if ( use_clone_img )
@@ -1470,6 +1489,20 @@ Xinha.makeBtnImg = function(imgDef, doc)
     img.style.left = imgDef[1] ? ('-' + (18 * (imgDef[1] + 1)) + 'px') : '-18px';
   }
   i_contain.appendChild(img);
+
+  // make text on image appear next to image and stretch
+  if (imgText) {
+      // store image directly as property to let
+      // caller know to append a text node
+      i_contain.imgText = imgText
+
+      i_contain.style.position = null;
+      i_contain.style.overflow = null;
+      i_contain.style.width = null;
+      i_contain.style.height = null;
+      i_contain.style.display = 'inline';
+      i_contain.style.paddingRight = '0.5em';
+  }
   return i_contain;
 };
 
