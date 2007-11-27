@@ -94,6 +94,7 @@ table.htmlarea {
   color: ButtonText;
   font: 11px Tahoma,Verdana,sans-serif;
   height:16px;
+  display:none;
 }
 
 .htmlarea .statusBar .statusBarTree a {
