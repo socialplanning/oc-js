@@ -828,7 +828,8 @@ var XinhaConfig = {
 	'backend' : 'backend?'
     },
     pageStyle : '',
-    pageStyleSheets : ['/++resource++css/themes/openplans.css', '/++resource++css/opencore.css'],
+      // the following sputnik css will be ignored if it isn't found
+      pageStyleSheets : ['/++resource++css/themes/openplans.css', '/++resource++css/opencore.css',  '/++resource++override-css/override.css'],
     plugins : [
       'ImageManager',
       'InternalLink',
