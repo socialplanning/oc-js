@@ -3633,10 +3633,16 @@ Xinha.prototype._getFirstAncestor = function(sel, types)
       {
         return prnt;
       }
-      if ( types.contains(prnt.tagName.toLowerCase()) )
-      {
-        return prnt;
-      }
+	tagname = prnt.tagName.toLowerCase()
+	for (var i=0; i<5; i++) {
+	    if (typeof types[i] == 'string' && types[i] == tagname){
+		return prnt;
+	    }
+	    else if (typeof types[i] == 'function' && types[i](this, prnt)) {
+		return prnt;
+	    }
+	}
+
       if ( prnt.tagName.toLowerCase() == 'body' )
       {
         break;

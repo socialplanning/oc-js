@@ -750,43 +750,47 @@ var XinhaConfig = {
     formatblock : {
       'Normal' : {tag: 'p',
                   invoker: function (xinha) {
-                    var blockquote = xinha.getParentElement();
-                    while (blockquote !== null && blockquote.tagName != 'BLOCKQUOTE')
-                    {
-                      blockquote = blockquote.parentNode;
-                    }
-                    if (blockquote)
-                    {
-                      var blockParent = blockquote.parentNode;
-                      var firstChild = null;
-                      while (blockquote.childNodes.length) {
-                        if (firstChild === null)
-                        {
-                          firstChild = blockquote.childNodes[0];
-                        }
-                        blockParent.insertBefore(blockquote.childNodes[0], blockquote);
-                      }
-                      blockParent.removeChild(blockquote);
-                      if (firstChild !== null)
-                      {
-                        // FIXME: this selects the entire first node, instead of just placing the
-                        // cursor at the beginning (or at the previous location where the cursor was).
-                        // Without this, the cursor hangs off to the side of the screen, where the
-                        // blockquote once had been.
-                        xinha.selectNodeContents(firstChild);
-                      }
-                    }
-                    else
-                    {
-                      if( !Xinha.is_gecko)
-                      {
-                        xinha.execCommand('formatblock', false, '<p>');
-                      }
+		      var blockquote = null
+                      var firstparent = xinha.getParentElement();
+		      if (firstparent.tagName != 'H2' && firstparent.tagName != 'H3' && firstparent.tagName != 'PRE') {
+			  blockquote = firstparent;
+			  while (blockquote !== null && blockquote.tagName != 'BLOCKQUOTE')
+			  {
+			      blockquote = blockquote.parentNode;
+			  }
+		      }
+		      if (blockquote)
+		      {
+			  var blockParent = blockquote.parentNode;
+			  var firstChild = null;
+			  while (blockquote.childNodes.length) {
+			      if (firstChild === null)
+			      {
+				  firstChild = blockquote.childNodes[0];
+			      }
+			      blockParent.insertBefore(blockquote.childNodes[0], blockquote);
+			  }
+			  blockParent.removeChild(blockquote);
+			  if (firstChild !== null)
+			  {
+			      // FIXME: this selects the entire first node, instead of just placing the
+			      // cursor at the beginning (or at the previous location where the cursor was).
+			      // Without this, the cursor hangs off to the side of the screen, where the
+			      // blockquote once had been.
+			      xinha.selectNodeContents(firstChild);
+			  }
+		      }
                       else
                       {
-                        xinha.execCommand('formatblock', false, 'p');
-                      }                        
-                    }
+			  if( !Xinha.is_gecko)
+			  {
+                              xinha.execCommand('formatblock', false, '<p>');
+			  }
+			  else
+			  {
+                              xinha.execCommand('formatblock', false, 'p');
+			  }                        
+                      }
                   },
                   // always return false, to give others a chance to override
                   // if nobody else thinks they should be selected, then it will default
@@ -795,6 +799,7 @@ var XinhaConfig = {
                  },
       'Heading' : 'h2',
       'Subheading' : 'h3',
+      'Pre-formatted' : 'pre',
       'Pull-quote' : {tag: 'blockquote',
                       invoker: function (xinha) {
                         xinha.execCommand("formatblock", false, "blockquote");
@@ -817,8 +822,7 @@ var XinhaConfig = {
                         }
                         return false;
                       }
-                     },
-	'Pre-formatted' : 'pre'
+                     }
     },
     filters : {
 	'tidy_handler' : null
