@@ -800,7 +800,7 @@ var XinhaConfig = {
       'Heading' : 'h2',
       'Subheading' : 'h3',
       'Pre-formatted' : 'pre',
-      'Pull-quote' : {tag: 'blockquote',
+      'Sidebar' : {tag: 'blockquote',
                       invoker: function (xinha) {
                         xinha.execCommand("formatblock", false, "blockquote");
                         var blockquote = xinha.getParentElement();
