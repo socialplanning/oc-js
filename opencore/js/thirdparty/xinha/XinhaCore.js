@@ -3625,35 +3625,33 @@ Xinha.prototype._getFirstAncestor = function(sel, types)
     types = [types];
   }
 
-  while ( prnt )
-  {
-    if ( prnt.nodeType == 1 )
+    while ( prnt )
     {
-      if ( types === null )
-      {
-        return prnt;
-      }
-	tagname = prnt.tagName.toLowerCase()
-	for (var i=0; i<5; i++) {
-	    if (typeof types[i] == 'string' && types[i] == tagname){
-		return prnt;
-	    }
-	    else if (typeof types[i] == 'function' && types[i](this, prnt)) {
-		return prnt;
-	    }
-	}
-
-      if ( prnt.tagName.toLowerCase() == 'body' )
-      {
-        break;
-      }
-      if ( prnt.tagName.toLowerCase() == 'table' )
-      {
-        break;
-      }
+        if ( prnt.nodeType == 1 )
+        {
+            if ( types === null )
+            {
+                return prnt;
+            }
+            for (var i=0; i<5; i++) {
+                if (typeof types[i] == 'string' && types[i] == prnt.tagName.toLowerCase()){
+                    return prnt;
+                }
+                else if (typeof types[i] == 'function' && types[i](this, prnt)) {
+                    return prnt;
+                }
+            }
+            if ( prnt.tagName.toLowerCase() == 'body' )
+            {
+                break;
+            }
+            if ( prnt.tagName.toLowerCase() == 'table' )
+            {
+                break;
+            }
+        }
+        prnt = prnt.parentNode;
     }
-    prnt = prnt.parentNode;
-  }
 
   return null;
 };
