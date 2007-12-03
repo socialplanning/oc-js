@@ -3900,6 +3900,7 @@ Xinha.prototype.execCommand = function(cmdID, UI, param)
   switch (cmdID)
   {
     case "htmlmode":
+      this._textArea.style.visibility = "visible"
       this.setMode();
     break;
 
