@@ -24,9 +24,9 @@ OC.liveElementKey = {};
 
 OC.liveElementKey.Element = {
     'TEXTAREA'               : 'FocusField', 
-    'INPUT_text'             : 'FocusField',
-    'INPUT_password'         : 'FocusField',
-    'INPUT_file'             : 'FocusField'
+    'INPUT'                  : {'text'     :'FocusField',
+                                'password' :'FocusField',
+                                'file'     :'FocusField'}
 }
 OC.liveElementKey.Class = {
     "oc-js-autoSelect"       : "AutoSelect",
@@ -89,13 +89,15 @@ OC.breatheLife = function(newNode, force) {
         if (classRegexString.length) {
             classRegexString += '|';
         }
-        classRegexString += '\\b' + key + '\\b';
+        // Oh crap - and _ match end of word, we can't allow that
+        classRegexString += '\\b' + key + '\\b(?![-_])';
     }
     var classRegex = new RegExp(classRegexString);
 
     // get an array of elements
-    var elements = Ext.query('*', targetNode);
-    elements.push(targetNode);
+    var elements = targetNode.getElementsByTagName('*');
+    //elements.push(targetNode);
+
     // loop through elements and match up against selectors
     for (var i = 0, len=elements.length; i<len; i++) {
       var element = elements[i];
@@ -104,25 +106,22 @@ OC.breatheLife = function(newNode, force) {
       var constructorNames = new Array();
     
       // check if element matches anything in the Elements list
-      if (this.liveElementKey.Element[element.tagName] != undefined) {
-        constructorNames.push(this.liveElementKey.Element[element.tagName]);
-      }
-      
-      var matcher = element.tagName + "_" + element.type;
-            
-      if (OC.liveElementKey.Element[matcher] != undefined ) {
-        constructorNames.push(this.liveElementKey.Element[matcher]);
+      var tag_lookup = this.liveElementKey.Element[element.tagName];
+      if (tag_lookup != undefined) {
+        if (typeof tag_lookup == 'string') {
+            constructorNames.push(tag_lookup);
+        } else if (tag_lookup[element.type] != undefined) {
+            constructorNames.push(tag_lookup[element.type]);
+        }
       }
       
       // check if class matches anything in the Classes list
       // We only do full class processing if the regex registers
       // a hit against the class list.
-      if (element.className.match (classRegex)) {
-        var classNames = element.className.split(' ');
-        for (var j=0; j<classNames.length; j++) {
-          if (this.liveElementKey.Class[classNames[j]] != undefined) {
-            constructorNames.push(this.liveElementKey.Class[classNames[j]]); 
-          }
+      var matches = element.className.match (classRegex)
+      if (matches) {
+        for (var j=0; j<matches.length; j++) {
+          constructorNames.push(this.liveElementKey.Class[matches[j]]); 
         }
       }
       
@@ -149,7 +148,7 @@ OC.breatheLife = function(newNode, force) {
     } // end for each element
     
     OC.timeEnd('breatheLife');
-    
+
 }; // breatheLife()
 
 /*
@@ -224,7 +223,7 @@ OC.Dom.removeItem = function(id) {
     }
     extEl.fadeOut({remove: true, useDisplay: true});
     OC.debug(OC.liveElements[extEl.id]);
-    OC.liveElements[extEl.id] = {};
+    delete OC.liveElements[extEl.id];
     OC.debug(OC.liveElements[extEl.id]);
     
     // to do: send user message w/ undo link
@@ -488,15 +487,15 @@ OC.ActionLink = function(extEl) {
 	     OC.debug("ActionLink: Could not get refs");
     } 
 
-    if (link.hasClass('oc-js-actionPost')) {
-        var method = "POST";
-    } else {
-        var method = "GET";
-    }
-
     function _doAction(e, el, o) {
     	e.stopEvent();
     	
+        if (link.hasClass('oc-js-actionPost')) {
+            var method = "POST";
+        } else {
+            var method = "GET";
+        }
+
     	// get action/href & split action from params
     	var action = el.href.split("?")[0];
     	var requestData = el.href.split("?")[1] + '&mode=async';
@@ -1175,12 +1174,8 @@ OC.LiveEdit = function(extEl) {
     
     
     // Public properties & methods
-    this.toggleForm = function(e) {
-      _toggleForm(e);
-    }
-    this.hideForm = function(e) {
-      _hideForm(e);
-    }
+    this.toggleForm = _toggleForm;
+    this.hideForm = _hideForm;
     this.isOpen = function() {
       if (!value.isVisible() && editForm.isVisible()) {
         return true;
