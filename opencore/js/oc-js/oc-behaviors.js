@@ -96,11 +96,9 @@ OC.breatheLife = function(newNode, force) {
 
     // get an array of elements
     var elements = targetNode.getElementsByTagName('*');
-    //elements.push(targetNode);
 
     // loop through elements and match up against selectors
-    for (var i = 0, len=elements.length; i<len; i++) {
-      var element = elements[i];
+    for (var element = targetNode, i = -1, len=elements.length; i<len; element=elements[++i]) {
     
       // which constructors will we add to this element?
       var constructorNames = new Array();
@@ -1015,12 +1013,17 @@ OC.AutoHeightContent = function(extEl) {
     OC.debug("AutoHeightContent: couldn't get refs");
   }
   
-  // settings
-  var currentHeight = content.dom.offsetHeight;
+  // The magic of asynchronous javascript.  This call takes over 2 seconds
+  // to run.  This doesn't bother me as long as it doesn't block the rest
+  // of the loading code.
+  setTimeout(function autoheightcontent_async() {
+      // settings
+      var currentHeight = content.dom.offsetHeight;
   
-  if (currentHeight < 430) {
-    content.dom.style.height = "430px";
-  }  
+      if (currentHeight < 430) {
+        content.dom.style.height = "430px";
+      }  
+  }, 2000);
   
   return this;
 }
