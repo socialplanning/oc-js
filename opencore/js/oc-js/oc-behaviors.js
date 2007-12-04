@@ -53,8 +53,7 @@ OC.liveElementKey.Class = {
 }
 OC.liveElementKey.Id = {
     "version_compare_form"   : "HistoryList",
-    'oc-project-create'      : "ProjectCreateForm",
-    'oc-content-container'   : "AutoHeightContent"
+    'oc-project-create'      : "ProjectCreateForm"
 }
     
 /* 
@@ -998,35 +997,6 @@ OC.DropDown  = function(extEl) {
     // pass back element to OC.LiveElements
     return this;
 };
-
-/* 
-  #
-  # Auto Height Content
-  #
-*/
-OC.AutoHeightContent = function(extEl) {
-  // get refs
-  var content = extEl;
-  
-  // check refs
-  if (!content) {
-    OC.debug("AutoHeightContent: couldn't get refs");
-  }
-  
-  // The magic of asynchronous javascript.  This call takes over 2 seconds
-  // to run.  This doesn't bother me as long as it doesn't block the rest
-  // of the loading code.
-  setTimeout(function autoheightcontent_async() {
-      // settings
-      var currentHeight = content.dom.offsetHeight;
-  
-      if (currentHeight < 430) {
-        content.dom.style.height = "430px";
-      }  
-  }, 2000);
-  
-  return this;
-}
 
 /* 
    #
