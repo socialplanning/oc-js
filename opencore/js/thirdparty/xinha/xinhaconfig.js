@@ -754,7 +754,7 @@ var XinhaConfig = {
                       var firstparent = xinha.getParentElement();
 		      if (firstparent.tagName != 'H2' && firstparent.tagName != 'H3' && firstparent.tagName != 'PRE') {
 			  blockquote = firstparent;
-			  while (blockquote !== null && blockquote.tagName != 'BLOCKQUOTE')
+			  while (blockquote !== null && blockquote.className.trim() != 'pullquote')
 			  {
 			      blockquote = blockquote.parentNode;
 			  }
@@ -800,22 +800,37 @@ var XinhaConfig = {
       'Heading' : 'h2',
       'Subheading' : 'h3',
       'Pre-formatted' : 'pre',
-      'Sidebar' : {tag: 'blockquote',
+      'Sidebar' : {tag: 'div',
                       invoker: function (xinha) {
-                        xinha.execCommand("formatblock", false, "blockquote");
-                        var blockquote = xinha.getParentElement();
-                        while (blockquote !== null && blockquote.tagName != 'BLOCKQUOTE') {
-                          blockquote = blockquote.parentNode;
-                        } 
-                        if (blockquote)
-                        {
-                          Xinha.addClass(blockquote, "pullquote");
-                        }
-                        xinha.updateToolbar()
+                          var el = xinha.getParentElement();
+                          if (el.tagName.toUpperCase() == 'BODY') 
+                          {
+                              //put div around selection
+                              if (xinha.hasSelectedText()){
+                                  selhtml = xinha.getSelectedHTML();
+                                  newhtml = '<div class="pullquote">' + selhtml + '</div>';
+                                  xinha.insertHTML(newhtml);
+                              }
+                          }
+                          else
+                          {
+                              //put div around current block
+                              while (el !== null & !Xinha.isBlockElement(el)){
+                                  el = el.parentNode;
+                              }
+                              if (el) {
+                                  el_parent = el.parentNode;
+                                  div = xinha._doc.createElement('div');
+                                  div.className = "pullquote";
+                                  el_parent.replaceChild(div, el);
+                                  div.appendChild(el);
+                              }
+                          }
+                          xinha.updateToolbar()
                       },
                       detect: function (xinha, el) {
                         while (el !== null) {
-                          if (el.nodeType == 1 && el.tagName.toUpperCase() == 'BLOCKQUOTE') {
+                          if (el.nodeType == 1 && el.tagName.toUpperCase() == 'DIV') {
                             return /\bpullquote\b/.test(el.className);
                           }
                           el = el.parentNode;
