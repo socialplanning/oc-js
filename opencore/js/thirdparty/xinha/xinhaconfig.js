@@ -852,6 +852,7 @@ var XinhaConfig = {
     plugins : [
       'ImageManager',
       'InternalLink',
+      'FullScreen',
       'GetHtml',
       'TableOperations'
     ],
@@ -869,6 +870,7 @@ var XinhaConfig = {
         ["outdent","indent"],
         ["toggleborders"],
         ["htmlmode"],
+        ["fullscreen"],
         ["linebreak"],
         ["createinternallink", "insertimage", "inserttable", "toggleborders"]
     ],
