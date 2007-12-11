@@ -94,7 +94,7 @@ OC.breatheLife = function(newNode, force) {
     var classRegex = new RegExp(classRegexString);
 
     // get an array of elements
-    var elements = targetNode.getElementsByTagName('*');
+    var elements = Ext.query('*', targetNode); 
 
     // loop through elements and match up against selectors
     for (var element = targetNode, i = -1, len=elements.length; i<len; element=elements[++i]) {
@@ -384,14 +384,13 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	default:
 	    OC.debug('_afterSuccess, task: default');
 	    break;
-	} // end switch on actio
+	} // end switch on action
     } // end for each element
 }; // end OC.Callbacks.afterAjaxSuccess()
 
 OC.Callbacks.afterAjaxFailure = function(o) {
     OC.debug('OC.Callbacks.afterAjaxFailure');
     OC.debug(o.responseText);
-    //OC.psm('There was a problem with the AJAX Request.  Octopus!', 'error');
 };
 
 /* 
