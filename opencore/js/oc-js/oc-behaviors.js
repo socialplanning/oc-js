@@ -48,8 +48,7 @@ OC.liveElementKey.Class = {
     'oc-js-template'         : "Template",
     'oc-js-gmap'             : "GMap",
     "oc-js-closeable"        : "CloseButton",
-    "oc-directEdit"          : "DirectEdit",
-    "oc-confirmProjectDelete": "ConfirmProjectDelete"
+    "oc-directEdit"          : "DirectEdit"
 }
 OC.liveElementKey.Id = {
     "version_compare_form"   : "HistoryList",
@@ -402,18 +401,13 @@ OC.Callbacks.afterAjaxFailure = function(o) {
 OC.Confirm = function(listener) {
     return function(e, el, o) {
         if (!el.className.match (/\boc-js-confirm\b/)) {
-            this._confirm_scope = listener;
-            var result = this._confirm_scope(e, el, o);
-            delete this._confirm_scope;
-            return result
+            return listener.call(this, e, el, o);
         }
         e && e.stopEvent();
-        var message = Ext.get(el).down('span.oc-confirm')
+        var message = Ext.get(el).child('span.oc-confirm')
         Ext.MessageBox.confirm('Confirm', message && message.dom.innerHTML || 'Are you sure?', function(response) {
             if ('yes' == response) {
-                this._confirm_scope = listener;
-                this._confirm_scope(e, el, o);
-                delete this._confirm_scope;
+                listener.call(this, e, el, o);
             }
         }, this);
         return false;
@@ -442,7 +436,7 @@ OC.FormConfirm = function(extEl) {
 
     // Add click handlers to the submit buttons to store which
     // button triggers the form.
-    var buttons = Ext.DomQuery.select('input[type=submit]', form.dom);
+    var buttons = Ext.query('input[type=submit], button[type=submit]', form.dom);
     for (var index = 0; index < buttons.length; ++index) {
         Ext.get(buttons[index]).on('click', function(e, el, o) { form._confirm_trigger = el.dom || el;}, this);
     }
@@ -457,7 +451,7 @@ OC.FormConfirm = function(extEl) {
             return true;
         }
         e.stopEvent();
-        var message = Ext.get(el).down('span.oc-confirm')
+        var message = Ext.get(el).child('span.oc-confirm')
         Ext.MessageBox.confirm('Confirm', message && message.dom.innerHTML || 'Are you sure?', function(response) {
             if ('yes' == response) {
                 form.confirmed = true;
@@ -530,7 +524,7 @@ OC.ActionSelect = function(extEl) {
     // get refs
     var container = extEl;
     var select = Ext.get(Ext.query('select',container.dom)[0]);
-    var submit = Ext.get(Ext.query('input[type=submit]', container.dom)[0]);
+    var submit = Ext.get(Ext.query('input[type=submit], button[type=submit]', container.dom)[0]);
     var hideFormLink = Ext.get(document.body);
     var form = select.up('form');
     var liveEdit = select.up('.oc-js-liveEdit');
@@ -817,7 +811,7 @@ OC.UploadForm = function(extEl) {
     var targetId = Ext.get(Ext.query('input[name=oc-target]',form.dom)[0]).dom.value;
     var target = Ext.get(targetId);
     var indicator = Ext.get(Ext.query('.oc-indicator',form.dom)[0]);
-    var submit = Ext.get(Ext.query('input[type=submit]',form.dom)[0])
+    var submit = Ext.get(Ext.query('input[type=submit], button[type=submit]',form.dom)[0])
     
     //check refs
     if (!form || !target || !indicator || !submit) {
@@ -1285,7 +1279,7 @@ OC.AutoSelect = function(extEl) {
     // get references.  No ID naming scheme yet.  just use parent node.
     var select = extEl;
     var form = select.dom.parentNode;
-    var submit = Ext.get(Ext.query('input[type=submit]', form)[0]) || Ext.get(Ext.query('button[type=submit]', form)[0]);
+    var submit = Ext.get(Ext.query('input[type=submit], button[type=submit]', form)[0]);
     
     
     if (!select || !submit || !form) {
@@ -1397,7 +1391,7 @@ OC.FieldClear = function(extEl) {
 OC.HistoryList = function(extEl) {
     // setup references
     var form = extEl;
-    var compareButtons = Ext.select('#' + form.dom.id + ' input[type=submit]');
+    var compareButtons = Ext.select('#' + form.dom.id + ' input[type=submit], #' + form.dom.id + ' button[type=submit]');
     var versions  = Ext.get(Ext.select('#' + form.dom.id + ' li'));
     var checkboxes = Ext.get(Ext.select('#' + form.dom.id + ' input[type=checkbox]'));
     var userMessage = Ext.get(Ext.query('.oc-message', form.dom)[0]);
@@ -1510,39 +1504,6 @@ OC.Toggler = function(extEl) {
     }
     checkbox.on('click', _handle_toggle, this);
 };
-
-/*
-#  Confirmation for Project Deletion
-*/
-
-OC.ConfirmProjectDelete = function(extEl) {
-
-  //get refs
-  var button = extEl;
-  var container = extEl.parentNode;
-  var warning = Ext.query('#oc-project-delete-warning', container)[0].textContent;
-
-  //check refs
-  if (!button) {
-    return;
-  }
-
-  function _callback(e) {
-      return function (conf_id) {
-          if (conf_id == 'no'){
-              e.preventDefault();
-          } else {
-              console.info('delete');
-          }
-      }
-  }
-
-  function _catch_click(e, el) { 
-      //YAHOO.util.Event.preventDefault(e);
-      Ext.MessageBox.confirm('Confirm', warning, _callback(e));
-  }
-  extEl.on('click', _catch_click);
-}
 
 /* 
    #
