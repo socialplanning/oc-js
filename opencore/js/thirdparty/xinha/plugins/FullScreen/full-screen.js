@@ -182,7 +182,7 @@ Xinha.prototype._fullScreen = function()
     // Maximize
     window.scroll(0,0);
     this._htmlArea.style.position = 'absolute';
-    this._htmlArea.style.zIndex   = 999;
+    this._htmlArea.style.zIndex   = 1001;
     this._htmlArea.style.left     = e.config.fullScreenMargins[3] + 'px';
     this._htmlArea.style.top      = e.config.fullScreenMargins[0] + 'px';
     if ( !Xinha.is_ie ) this._htmlArea.style.border   = 'none';
