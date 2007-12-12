@@ -2020,6 +2020,12 @@ Xinha.prototype.sizeEditor = function(width, height, includingBars, includingPan
   width  = this._htmlArea.offsetWidth;
   height = this._htmlArea.offsetHeight;
 
+
+  // for IE in fullscreen mode the offsetWidth isn't correct so we need to hack
+    if (Xinha.is_ie && this._isFullScreen){
+        width = parseInt(this._htmlArea.style.width);
+    }
+
   // Set colspan for toolbar, and statusbar, rowspan for left & right panels, and insert panels to be displayed
   // into thier rows
   var panels = this._panels;
