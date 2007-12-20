@@ -1695,7 +1695,7 @@ OC.GMap = function(extEl) {
    #
    # Member List
    #
-   # Take's a comma seperated list of members an turns it into a list control
+   # Take's a comma separated list of members an turns it into a list control
    # that performs member validation.
 */
 OC.MemberList = function(extEl) {
@@ -1726,7 +1726,7 @@ OC.MemberList = function(extEl) {
         // which gives us the member id
         var memId = memberEl.parentNode.id.substring(7);
 
-        // Regex that will properly remove the text from a comma seperated list,
+        // Regex that will properly remove the text from a comma separated list,
         // leaving the correct number of commas behind (one if it is in the middle of
         // the list, or none at either end)
         //                        |- One Element -|-  Beginning  -|-     End     -|-  Middle |
@@ -1750,7 +1750,9 @@ OC.MemberList = function(extEl) {
     }
 
     // If there is a description tag, we'll hide it
-    var desc = meminput.up('p.oc-js-memberList_description');
+    var desc = Ext.get(meminput.dom.parentNode).down('p.oc-js-memberList_description');
+    desc.setVisibilityMode(Ext.Element.DISPLAY);
+    desc.hide();
 
 
     var control_text = Ext.DomHelper.insertBefore(meminput.dom, {tag: 'input', type: 'text'}, true);
