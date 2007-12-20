@@ -1740,8 +1740,9 @@ OC.MemberList = function(extEl) {
     var list_member_template = new Ext.DomHelper.Template('<li id="member-{0}" ><a style="cursor: pointer">[ - ]</a> {0}</li>');
 
     // We'll use a regex to perform a string trim, since the function doesn't exist
-    // in javascript.
-    var memarray = meminput.dom.value.split(',');
+    // in javascript. We've got to remember that split on an empty string returns
+    // an array containing an empty string, not an empty array.
+    var memarray = meminput.dom.value.length ? meminput.dom.value.split(',') : [];
     var reTrim = /^\s*\(.*\)\s*$/;
     for (var idxMember = 0; idxMember < memarray.length; ++idxMember) {
         memarray[idxMember] = memarray[idxMember].replace(reTrim, '\\1');
