@@ -49,7 +49,8 @@ OC.liveElementKey.Class = {
     'oc-js-memberList'       : "MemberList",
     'oc-js-gmap'             : "GMap",
     "oc-js-closeable"        : "CloseButton",
-    "oc-directEdit"          : "DirectEdit"
+    "oc-directEdit"          : "DirectEdit",
+    "oc-js-unhide"           : "RevealElement",
 }
 OC.liveElementKey.Id = {
     "version_compare_form"   : "HistoryList",
@@ -1606,8 +1607,9 @@ OC.GMap = function(extEl) {
     }
 
 
-    // Create the text control used to update the map
-    var control_text = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'text'}, true);
+    // Create the controls used to update the map
+    //var control_text = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'text'}, true);
+    var control_text = Ext.get('position-text');
     var control_button = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'button', value: 'Go'}, true);
     Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'br'});
     var control_error = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'span', cls: 'oc-form-error'}, true);
@@ -1830,3 +1832,11 @@ OC.MemberList = function(extEl) {
     OC.SubmitBlocker.call(this, parent_form, control_text, control_button.member_add);
 };
 
+OC.RevealElement = function(extEl) {
+    // Any elements marked as oc-js-unhide will have that class removed.
+    // Given appropriate css, this is the visual inverse of <noscript>.
+    if (!extEl) {
+         OC.debug("Unhide: Could not find element");
+    } 
+    extEl.removeClass('oc-js-unhide');
+};
