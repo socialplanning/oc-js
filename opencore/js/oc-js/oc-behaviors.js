@@ -46,6 +46,7 @@ OC.liveElementKey.Class = {
     'oc-js-formConfirm'      : "FormConfirm",
     'oc-js-liveValidate'     : "LiveValidate",
     'oc-js-template'         : "Template",
+    'oc-js-memberList'       : "MemberList",
     'oc-js-gmap'             : "GMap",
     "oc-js-closeable"        : "CloseButton",
     "oc-directEdit"          : "DirectEdit"
@@ -90,7 +91,7 @@ OC.breatheLife = function(newNode, force) {
         // Oh crap - and _ match end of word, we can't allow that
         classRegexString += '\\b' + key + '\\b(?![-_])';
     }
-    var classRegex = new RegExp(classRegexString);
+    var classRegex = new RegExp(classRegexString, 'g');
 
     // get an array of elements
     var elements = Ext.query('*', targetNode); 
@@ -203,6 +204,72 @@ OC.psm = function(text, tone) {
     message.show();
 };
 
+// Clean up the JSON response and eval it.
+OC.CleanJSON = function(responseText) {
+    // trim response text to avoid errors in IE
+    OC.debug(responseText);
+    var cleanedResponseText = responseText.replace(/[\r\n]/g, "");
+    cleanedResponseText = cleanedResponseText.replace(/^\s*<html>.*?<body>/, "");
+    cleanedResponseText = cleanedResponseText.replace(/<\/body>\s*<\/html>\s*$/, "")
+
+    cleanedResponseText = cleanedResponseText.replace(/&lt;/g, "<");
+    cleanedResponseText = cleanedResponseText.replace(/&gt;/g, ">");
+    cleanedResponseText = cleanedResponseText.replace(/&amp;/g, "&");
+    OC.debug(cleanedResponseText);
+    
+    var response = cleanedResponseText;
+    try {
+      var response = eval( "(" + cleanedResponseText + ")" );
+    } catch( e ) {
+      OC.debug(e);
+      OC.debug("Couldn't parse the response.  Bad JSON? (below): ");
+	  OC.debug(cleanedResponseText);
+    }
+    return response;
+}
+
+/* 
+   #
+   # Event wrapper to handle confirmation...
+   #
+*/
+
+OC.Confirm = function(listener) {
+    return function(e, el, o) {
+        if (!el.className.match (/\boc-js-confirm\b/)) {
+            return listener.call(this, e, el, o);
+        }
+        e && e.stopEvent();
+        var message = Ext.get(el).child('span.oc-confirm')
+        Ext.MessageBox.confirm('Confirm', message && message.dom.innerHTML || 'Are you sure?', function(response) {
+            if ('yes' == response) {
+                listener.call(this, e, el, o);
+            }
+        }, this);
+        return false;
+    }
+}
+
+// A function to install handle a submit blocker for a text field for handling
+// the enter key.
+OC.SubmitBlocker = function(form, field, action) {
+
+    if (!form) {
+        return;
+    }
+
+    field.addListener({scope: this,
+        'focus': function() {
+            form.addListener({scope: this,
+                'submit': action,
+                stopEvent: true});
+        },
+        'blur': function() {
+            form.removeListener('submit', action);
+        }
+    });
+}
+
 /*
   #
   # DOM Utilities
@@ -277,26 +344,7 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	   });
     OC.debug('o: ' + o);
     
-    var response;
-    // trim response text to avoid errors in IE
-    OC.debug(o.responseText);
-    var cleanedResponseText = o.responseText.replace(/[\r\n]/g, "");
-    cleanedResponseText = cleanedResponseText.replace(/^\s*<html>.*?<body>/, "");
-    cleanedResponseText = cleanedResponseText.replace(/<\/body>\s*<\/html>\s*$/, "")
-
-    cleanedResponseText = cleanedResponseText.replace(/&lt;/g, "<");
-    cleanedResponseText = cleanedResponseText.replace(/&gt;/g, ">");
-    cleanedResponseText = cleanedResponseText.replace(/&amp;/g, "&");
-    OC.debug(cleanedResponseText);
-    
-    try {
-      response = eval( "(" + cleanedResponseText + ")" );
-    } catch( e ) {
-      OC.debug(e);
-      OC.debug("Couldn't parse the response.  Bad JSON? (below): ");
-	    OC.debug(cleanedResponseText);
-	    //OC.psm('Sorry!  There was an error -- please contact support@openplans.org if this continues to happen.', 'bad')
-    }
+    var response = OC.CleanJSON(o.responseText);
     
     if( response instanceof Array ) {
 	// for backcompatibility with existing code. consider
@@ -391,28 +439,6 @@ OC.Callbacks.afterAjaxFailure = function(o) {
     OC.debug('OC.Callbacks.afterAjaxFailure');
     OC.debug(o.responseText);
 };
-
-/* 
-   #
-   # Event wrapper to handle confirmation...
-   #
-*/
-
-OC.Confirm = function(listener) {
-    return function(e, el, o) {
-        if (!el.className.match (/\boc-js-confirm\b/)) {
-            return listener.call(this, e, el, o);
-        }
-        e && e.stopEvent();
-        var message = Ext.get(el).child('span.oc-confirm')
-        Ext.MessageBox.confirm('Confirm', message && message.dom.innerHTML || 'Are you sure?', function(response) {
-            if ('yes' == response) {
-                listener.call(this, e, el, o);
-            }
-        }, this);
-        return false;
-    }
-}
 
 /*
   #------------------------------------------------------------------------
@@ -1637,25 +1663,7 @@ OC.GMap = function(extEl) {
 
     // Install onfocus and onblur handlers for the text control to handle the enter key
     // if there is a containing form.
-    if (parent_form) {
-        control_text.addListener({scope: this,
-            'focus': function() {
-                if (undefined == parent_form.blocker) {
-                    parent_form.blocker = function(e) {
-                        control_button.geocode();
-                    }
-                }
-                parent_form.addListener({scope: this,
-                    'submit': parent_form.blocker,
-                    stopEvent: true});
-
-                var test = 'text';
-            },
-            'blur': function() {
-                parent_form.removeListener('submit', parent_form.blocker);
-            }
-        });
-    }
+    OC.SubmitBlocker.call(this, parent_form, control_text, control_button.geocode);
 
     var map = new GMap2(document.getElementById(mapdiv.id));
     map.addControl(new GLargeMapControl());
@@ -1681,5 +1689,141 @@ OC.GMap = function(extEl) {
     }
 
     var geocoder = new GClientGeocoder();
+};
+
+/* 
+   #
+   # Member List
+   #
+   # Take's a comma seperated list of members an turns it into a list control
+   # that performs member validation.
+*/
+OC.MemberList = function(extEl) {
+    // Get required elements
+    var meminput = extEl;
+    
+    if (!meminput) {
+        OC.debug("MemberList: Could not find list of members");
+        return;
+    } else if (('input' != meminput.dom.tagName.toLowerCase()) ||
+              !(meminput.dom.type in {hidden:'', text:'', textarea:''})) {
+
+        // The elements was either not an input fields or not one that can hold the member list.
+        OC.debug("MemberList: Bad initialization coordinates");
+        return;
+    }
+
+    // We're gonna hide the real form element we use from the user.
+    meminput.setVisibilityMode(Ext.Element.DISPLAY);
+    meminput.hide();
+
+    // Create the list control used to update the member list
+    var control_list = Ext.DomHelper.insertBefore(meminput.dom, {tag: 'ul', cls:'oc-plainList'}, true);
+
+    // We need a function that will be able to remove members from the id list.
+    control_list.member_remove = function(evt, memberEl, o) {
+        // We'll grab the part of the element id after 'member-' (7 characters long)
+        // which gives us the member id
+        var memId = memberEl.parentNode.id.substring(7);
+
+        // Regex that will properly remove the text from a comma seperated list,
+        // leaving the correct number of commas behind (one if it is in the middle of
+        // the list, or none at either end)
+        //                        |- One Element -|-  Beginning  -|-     End     -|-  Middle |
+        var reRemove = new RegExp('^' + memId + '$|^' + memId + ',|,' + memId + '$|,' + memId);
+
+        meminput.dom.value = meminput.dom.value.replace(reRemove, '');
+        OC.Dom.removeItem (memberEl.parentNode.id);
+    }
+
+    // Template for creating list elements for each member.
+    var list_member_template = new Ext.DomHelper.Template('<li id="member-{0}" ><a style="cursor: pointer">[ - ]</a> {0}</li>');
+
+    // We'll use a regex to perform a string trim, since the function doesn't exist
+    // in javascript.
+    var memarray = meminput.dom.value.split(',');
+    var reTrim = /^\s*\(.*\)\s*$/;
+    for (var idxMember = 0; idxMember < memarray.length; ++idxMember) {
+        memarray[idxMember] = memarray[idxMember].replace(reTrim, '\\1');
+        var mem = list_member_template.insertFirst(control_list.dom, [memarray[idxMember]], true);
+        Ext.EventManager.addListener(mem.dom.firstChild, 'click', control_list.member_remove);
+    }
+
+    // If there is a description tag, we'll hide it
+    var desc = meminput.up('p.oc-js-memberList_description');
+
+
+    var control_text = Ext.DomHelper.insertBefore(meminput.dom, {tag: 'input', type: 'text'}, true);
+    var control_button = Ext.DomHelper.insertBefore(meminput.dom, {tag: 'input', type: 'button', value: 'Add'}, true);
+    Ext.DomHelper.insertBefore(meminput.dom, {tag: 'br'});
+    var control_error = Ext.DomHelper.insertBefore(meminput.dom, {tag: 'span', cls: 'oc-form-error'}, true);
+
+    // If we have a parent form, we'll put in a submit blocker when the text control has focus
+    var parent_form = meminput.up('form');
+
+    // We need a function that will take the desired text input, and submit it to Google
+    // Maps.  Once we have it, we will set it up so that a click of the button or hitting
+    // enter will perform the work.  In order to handle pressing enter, whenever the text
+    // area has focus, we install a new submit handler for the parent form which cancels the
+    // submit and instead performs the geocoding.  We remove this handler whenever the
+    // text control loses focus.
+    control_button.member_add = function() {
+        memarray = control_text.dom.value.split(',');
+        var candidates = []
+        for (var idxMember = 0; idxMember < memarray.length; ++idxMember) {
+            memarray[idxMember] = memarray[idxMember].replace(reTrim, '\\1');
+
+            // Build a regex that matches the token in a comma separated string
+            var reMatch = new RegExp('(^|,)' + memarray[idxMember] + '(,|$)');
+
+            if (!meminput.dom.value.match(reMatch)) {
+                // If we don't already have it in our list of members, we'll look it up.
+                candidates.push(memarray[idxMember]);
+            }
+        }
+        control_text.dom.value = '';
+        control_error.update('');
+        if (!candidates.length) {
+            return;
+        }
+        Ext.Ajax.request({
+            url: location,
+            params:'members=' + candidates.join(',') + '&task|validate-members=&mode=async',
+            success:function(response, options) {
+                // Clean the response, and remove any old error text
+                var members = OC.CleanJSON(response.responseText)
+                control_error.update('');
+
+                for (var idxMember = 0; idxMember < members.valid.length; ++idxMember) {
+                    // We need a comma if there are already values in the list
+                    if (meminput.dom.value.length) {
+                        meminput.dom.value += ',';
+                    }
+                    meminput.dom.value += members.valid[idxMember];
+
+                    // Create the list element for the display, and attach a listener to the delete link.
+                    var mem = list_member_template.insertFirst(control_list.dom, [members.valid[idxMember]], true);
+                    Ext.EventManager.addListener(mem.dom.firstChild, 'click', control_list.member_remove);
+                }
+                if (members.rejects.length) {
+                    control_text.dom.value = members.rejects.join(',');
+                    control_error.update('The following members are invalid: "' + members.rejects.join(' ') + '"');
+                }
+            },
+            failure:function(response, options) {
+                control_error.update('Unable to validate members');
+            },
+            scope:this
+        });
+    }
+
+    // Install click handler for the button
+    control_button.addListener({scope: this,
+        'click': control_button.member_add
+    });
+
+    // Install onfocus and onblur handlers for the text control to handle the enter key
+    // if there is a containing form.
+    OC.SubmitBlocker.call(this, parent_form, control_text, control_button.member_add);
 };
 
