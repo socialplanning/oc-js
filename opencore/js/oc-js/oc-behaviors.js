@@ -491,7 +491,8 @@ OC.FormConfirm = function(extEl) {
 
 /* 
    #
-   # Action Links
+   # Action Links submit via XHR rather than plain requests.  
+   # With oc-js-actionPost, the method is POST; else it is GET
    #
 */
 OC.ActionLink = function(extEl) {
@@ -612,8 +613,8 @@ OC.ActionSelect = function(extEl) {
 
 /* 
    #
-   # Action Buttons
-   #
+   # Action Buttons: causes a submit button to submit a XHR, rather
+   # than a plain request.
 */
 OC.ActionButton = function(extEl) {
     // get refs
