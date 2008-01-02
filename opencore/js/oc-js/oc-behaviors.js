@@ -1579,6 +1579,9 @@ OC.GMap = function(extEl) {
         return;
     } 
 
+    // If we have a parent form, we'll put in a submit blocker when the text control has focus, and add some inputs.
+    var parent_form = mapdiv.up('form');
+
     // Look for an existing latitude/longitude pair.
     var input_latitude = Ext.get(mapdiv.id + '-latitude');
     var input_longitude = Ext.get(mapdiv.id + '-longitude');
@@ -1589,92 +1592,92 @@ OC.GMap = function(extEl) {
         return;
     }
 
-    // If we don't have the coordinate inputs, we will create them.  If we do have elements
-    // with inputs, we'll make sure they're elements we can use as inputs.
-    if (!input_latitude) {
-        var input_template = new Ext.DomHelper.Template('<input type="hidden" id="{0}" name="{0}" />');
-
-        input_latitude = input_template.insertBefore(mapdiv.dom, [mapdiv.id + '-latitude'], true);
-        input_longitude = input_template.insertBefore(mapdiv.dom, [mapdiv.id + '-longitude'], true);
-
-    } else if (('input' != input_latitude.dom.tagName.toLowerCase()) || ('input' != input_longitude.dom.tagName.toLowerCase()) ||
-        !(input_latitude.dom.type in {hidden:'', text:'', textarea:''}) ||
-        !(input_latitude.dom.type in {hidden:'', text:'', textarea:''})) {
-
-        // The elements wre either not input fields, or input fields that can't hold our
-        // latitude and longitude values.
-        OC.debug("GMap: Bad initialization coordinates");
-        return;
-    }
-
-
-    // Create the controls used to update the map
-    //var control_text = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'text'}, true);
-    var control_text = Ext.get('position-text');
-    var control_button = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'button', value: 'Go'}, true);
-    Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'br'});
-    var control_error = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'span', cls: 'oc-form-error'}, true);
-
-    // If we have a parent form, we'll put in a submit blocker when the text control has focus
-    var parent_form = mapdiv.up('form');
-
-    // Function that takes a geocoder response and adjusts the map accordingly
-    var updateMap = function(response) {
-      if (!response || response.Status.code != 200) {
-        control_error.update("Sorry, we were unable to find that address on the map");
-      } else {
-        map.clearOverlays();
-        control_error.update('');
-        var place = response.Placemark[0];
-        var point = new GLatLng(place.Point.coordinates[1],
-                            place.Point.coordinates[0]);
-        var marker = new GMarker(point, {draggable: true});
-
-        input_latitude.dom.value = point.lat();
-        input_longitude.dom.value = point.lng();
-
-        GEvent.addListener(marker, 'dragstart', function() {
-            map.closeInfoWindow();
-        });
+    // If we have a form, we need to hook up our UI.
+    if (parent_form != null) {
+        // If we don't have the coordinate inputs, we will create them.  If we do have elements
+        // with inputs, we'll make sure they're elements we can use as inputs.
+        if (!input_latitude) {
+            var input_template = new Ext.DomHelper.Template('<input type="hidden" id="{0}" name="{0}" />');
     
-        GEvent.addListener(marker, 'dragend', function() {
+            input_latitude = input_template.insertBefore(mapdiv.dom, [mapdiv.id + '-latitude'], true);
+            input_longitude = input_template.insertBefore(mapdiv.dom, [mapdiv.id + '-longitude'], true);
+    
+        } else if (('input' != input_latitude.dom.tagName.toLowerCase()) || ('input' != input_longitude.dom.tagName.toLowerCase()) ||
+            !(input_latitude.dom.type in {hidden:'', text:'', textarea:''}) ||
+            !(input_latitude.dom.type in {hidden:'', text:'', textarea:''})) {
+    
+            // The elements wre either not input fields, or input fields that can't hold our
+            // latitude and longitude values.
+            OC.debug("GMap: Bad initialization coordinates");
+            return;
+        }
+
+        // Create the controls used to update the map
+        //var control_text = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'text'}, true);
+        var control_text = Ext.get('position-text');
+        var control_button = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'button', value: 'Go'}, true);
+        Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'br'});
+        var control_error = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'span', cls: 'oc-form-error'}, true);
+    
+        // Function that takes a geocoder response and adjusts the map accordingly
+        var updateMap = function(response) {
+          if (!response || response.Status.code != 200) {
+            control_error.update("Sorry, we were unable to find that address on the map");
+          } else {
+            map.clearOverlays();
             control_error.update('');
-            point = marker.getPoint();
+            var place = response.Placemark[0];
+            var point = new GLatLng(place.Point.coordinates[1],
+                                place.Point.coordinates[0]);
+            var marker = new GMarker(point, {draggable: true});
+    
             input_latitude.dom.value = point.lat();
             input_longitude.dom.value = point.lng();
+    
+            GEvent.addListener(marker, 'dragstart', function() {
+                map.closeInfoWindow();
+            });
+        
+            GEvent.addListener(marker, 'dragend', function() {
+                control_error.update('');
+                point = marker.getPoint();
+                input_latitude.dom.value = point.lat();
+                input_longitude.dom.value = point.lng();
+            });
+    
+            map.addOverlay(marker);
+            map.setCenter(point, 15);
+          }
+        }
+    
+        // We need a function that will take the desired text input, and submit it to Google
+        // Maps.  Once we have it, we will set it up so that a click of the button or hitting
+        // enter will perform the work.  In order to handle pressing enter, whenever the text
+        // area has focus, we install a new submit handler for the parent form which cancels the
+        // submit and instead performs the geocoding.  We remove this handler whenever the
+        // text control loses focus.
+        control_button.geocode = function() {
+            geocoder.getLocations(control_text.dom.value, updateMap);
+        }
+        // Install click handler for the button
+        control_button.addListener({scope: this,
+            'click': control_button.geocode
         });
 
-        map.addOverlay(marker);
-        map.setCenter(point, 15);
-      }
+        // Install onfocus and onblur handlers for the text control to handle the enter key.
+        OC.SubmitBlocker.call(this, parent_form, control_text, control_button.geocode);
+    
+    } else {
+	OC.debug("no parent form, must be a map just for viewing");
     }
-
-    // We need a function that will take the desired text input, and submit it to Google
-    // Maps.  Once we have it, we will set it up so that a click of the button or hitting
-    // enter will perform the work.  In order to handle pressing enter, whenever the text
-    // area has focus, we install a new submit handler for the parent form which cancels the
-    // submit and instead performs the geocoding.  We remove this handler whenever the
-    // text control loses focus.
-    control_button.geocode = function() {
-        geocoder.getLocations(control_text.dom.value, updateMap);
-    }
-
-    // Install click handler for the button
-    control_button.addListener({scope: this,
-        'click': control_button.geocode
-    });
-
-    // Install onfocus and onblur handlers for the text control to handle the enter key
-    // if there is a containing form.
-    OC.SubmitBlocker.call(this, parent_form, control_text, control_button.geocode);
 
     var map = new GMap2(document.getElementById(mapdiv.id));
     map.addControl(new GLargeMapControl());
     map.enableScrollWheelZoom();
 
     // Try to get initialization coordinates
-    var lat = input_latitude.getValue();
-    var lon = input_longitude.getValue();
+    var lat = input_latitude ? input_latitude.getValue() : '';
+    var lon = input_longitude ? input_longitude.getValue(): '';
 
     if ((0 == lat.length) || (0 == lon.length)) {
         // Lat/Lon of TOPP
@@ -1687,7 +1690,7 @@ OC.GMap = function(extEl) {
 
     map.setCenter(center, 13);
 
-    if (marker) {
+    if (typeof(marker) != 'undefined' && marker) {
         map.addOverlay(marker);
     }
 
