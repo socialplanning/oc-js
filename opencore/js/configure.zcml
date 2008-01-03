@@ -16,9 +16,4 @@
     directory="thirdparty/yui-ext"
     />
 
-  <browser:resourceDirectory
-    name="firebug"
-    directory="thirdparty/firebug"
-    />
-
 </configure>
