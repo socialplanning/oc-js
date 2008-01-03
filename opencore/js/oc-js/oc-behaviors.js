@@ -1566,7 +1566,7 @@ OC.Template = function(extEl) {
 */
 OC.GMap = function(extEl) {
     // Verify JS support
-    if ((undefined == GBrowserIsCompatible) || (!GBrowserIsCompatible())){
+    if ((typeof(GBrowserIsCompatible) == 'undefined' || (!GBrowserIsCompatible()))){
         OC.debug("GMap: Google Map API not loaded or unsupported browser");
         return;
     }
