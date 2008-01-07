@@ -497,7 +497,7 @@ OC.FormConfirm = function(extEl) {
 */
 OC.ActionLink = function(extEl) {
     // get refs
-    link = extEl;
+    var link = extEl;
     this.button = link; /* for ajax callback */
     this.origButtonValue = this.button.dom.innerHTML; /* for ajax callback */
     
