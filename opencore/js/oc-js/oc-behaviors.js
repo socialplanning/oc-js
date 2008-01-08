@@ -1688,10 +1688,16 @@ OC.GMap = function(extEl) {
         var marker = new GMarker(center, {draggable: true});
     }
 
+    var dropHandler = function() {
+        input_latitude.dom.value = this.getLatLng().lat();
+        input_longitude.dom.value = this.getLatLng().lng();
+    }
+
     map.setCenter(center, 13);
 
     if (typeof(marker) != 'undefined' && marker) {
         map.addOverlay(marker);
+        GEvent.addListener(marker, 'dragend', dropHandler);
     }
 
     var geocoder = new GClientGeocoder();
