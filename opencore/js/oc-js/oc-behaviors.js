@@ -752,7 +752,10 @@ OC.LiveValidate = function(extEl) {
 	    var input = form.dom.elements[i];
 	    if (input.value && input.type != 'submit') {
 		OC.debug(form.dom.elements[i]);
-		request += form.dom.elements[i].name + "=" + form.dom.elements[i].value + "&";
+    var value = form.dom.elements[i].value
+    var encoded = escape(value);
+    encoded = encoded.replace("+", "%2B");
+		request += form.dom.elements[i].name + "=" + encoded + "&";
 	    }
 	}      
 	
