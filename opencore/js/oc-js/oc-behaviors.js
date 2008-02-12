@@ -1030,12 +1030,13 @@ OC.DropDown  = function(extEl) {
 OC.ProjectCreateForm = function(extEl) {
     // get refs
     var form = extEl;
-    var nameField = Ext.get(Ext.query('#title')[0], form.dom);
-    var urlField = Ext.get(Ext.query('#projid')[0], form.dom);
+    var nameField = Ext.get(Ext.query('input#project_title')[0], form.dom);
+    var urlField = Ext.get(Ext.query('input#projid')[0], form.dom);
     
     // check refs
     if (!form || !nameField || !urlField) {
 	     OC.debug("ProjectCreateForm: couldn't get refs");
+         return;
     }
     
     // settings & properties
