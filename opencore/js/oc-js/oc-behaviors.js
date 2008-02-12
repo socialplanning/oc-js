@@ -1423,9 +1423,9 @@ OC.FieldClear = function(extEl) {
 OC.HistoryList = function(extEl) {
     // setup references
     var form = extEl;
-    var compareButtons = Ext.select('#' + form.dom.id + ' input[type=submit], #' + form.dom.id + ' button[type=submit]');
-    var versions  = Ext.get(Ext.select('#' + form.dom.id + ' li'));
-    var checkboxes = Ext.get(Ext.select('#' + form.dom.id + ' input[type=checkbox]'));
+    var compareButtons = Ext.select('form#' + form.dom.id + ' input[type=submit], form#' + form.dom.id + ' button[type=submit]');
+    var versions  = Ext.get(Ext.select('form#' + form.dom.id + ' li'));
+    var checkboxes = Ext.get(Ext.select('form#' + form.dom.id + ' input[type=checkbox]'));
     var userMessage = Ext.get(Ext.query('.oc-message', form.dom)[0]);
     
     //check references
