@@ -50,12 +50,12 @@ OC.liveElementKey.Class = {
     'oc-js-gmap'             : "GMap",
     "oc-js-closeable"        : "CloseButton",
     "oc-directEdit"          : "DirectEdit",
-    "oc-js-unhide"           : "RevealElement",
-}
+    "oc-js-unhide"           : "RevealElement"
+};
 OC.liveElementKey.Id = {
     "version_compare_form"   : "HistoryList",
     'oc-project-create'      : "ProjectCreateForm"
-}
+};
     
 /* 
    # breathes life (aka js behaviors) into HTML elements.  call this on
