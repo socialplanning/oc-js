@@ -383,6 +383,10 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	    
 	    html = Ext.util.Format.trim(html);
 	    var target = Ext.get(elId);
+        if (!target) {
+            // This particular target hasn't been found
+            break;
+        }
 	    var newNode = Ext.DomHelper.insertHtml('beforeBegin', target.dom, html);
 	    target.remove();
 
