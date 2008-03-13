@@ -748,36 +748,33 @@ OC.LiveValidate = function(extEl) {
     // get refs
     var field = extEl;
     var form = field.up('form');
-    
+
     function _validateField(e, el, o) {
-	
-	var request = "";
-	for (var i=0; i<form.dom.elements.length; i++) {
-	    var input = form.dom.elements[i];
-	    if (input.value && input.type != 'submit') {
-		OC.debug(form.dom.elements[i]);
-    var value = form.dom.elements[i].value
-    var encoded = escape(value);
-    encoded = encoded.replace("+", "%2B");
-		request += form.dom.elements[i].name + "=" + encoded + "&";
-	    }
-	}      
-	
-	// send ajax request
-	var action = form.dom.action;
-	
-	var cObj = YAHOO.util.Connect.asyncRequest("POST", action, {
-		success: OC.Callbacks.afterAjaxSuccess, 
-		failure: OC.Callbacks.afterAjaxFailure, 
-		scope: this 
-	    }, request + "task|validate=validate&mode=async");
-	
-    }
+      
+        var request = "";
+        for (var i=0; i<form.dom.elements.length; i++) {
+            var input = form.dom.elements[i];
+            if (input.value && input.type != 'submit') {
+            var value = form.dom.elements[i].value
+            var encoded = escape(value);
+            encoded = encoded.replace("+", "%2B");
+            request += form.dom.elements[i].name + "=" + encoded + "&";
+            }
+        }      
+        
+        // send ajax request
+        var action = form.dom.action;
     
+        var cObj = YAHOO.util.Connect.asyncRequest("POST", action, {
+            success: OC.Callbacks.afterAjaxSuccess, 
+            failure: OC.Callbacks.afterAjaxFailure, 
+            scope: this 
+            }, request + "task|validate=validate&mode=async");    
+    }
     field.on('blur', _validateField, this);
     
     function _afterValidateFailure(o) {
-	
+    
     }
     
     // pass back element to OC.LiveElements
