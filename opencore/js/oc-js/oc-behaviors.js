@@ -50,7 +50,8 @@ OC.liveElementKey.Class = {
     'oc-js-gmap'             : "GMap",
     "oc-js-closeable"        : "CloseButton",
     "oc-directEdit"          : "DirectEdit",
-    "oc-js-unhide"           : "RevealElement"
+    "oc-js-unhide"           : "RevealElement",
+    "oc-js-autosave"         : "CookieAutoSave"
 };
 OC.liveElementKey.Id = {
     "version_compare_form"   : "HistoryList",
@@ -1854,4 +1855,69 @@ OC.RevealElement = function(extEl) {
          OC.debug("Unhide: Could not find element");
     } 
     extEl.removeClass('oc-js-unhide');
+};
+
+// Autosave the contents of the field, and restore if necessary
+OC.CookieAutoSave = function(extEl) {
+    if (!extEl.id) {
+        return;
+    }
+
+    var get_cookie = function(cname) {
+        // Make sure the document supports cookies
+        if (!document || !document.cookie || (0 == document.cookie.length)) {
+            return '';
+        }
+
+        // Look for the named cookie in the cookie list
+        var start;
+        if (-1 == (start = document.cookie.indexOf(cname + '='))) {
+            return '';
+        }
+
+        // Point the index to the start of the value
+        start += cname.length + 1;
+
+        // Find the end of the cookie.  If it's the last cookie, there
+        // is no delimiter string
+        var end = document.cookie.indexOf(';', start);
+        end = (-1 == end) ? document.cookie.length : end;
+
+        return unescape(document.cookie.substring(start, end));
+    }
+
+    function set_cookie(name, value, path, domain, secure) {
+
+        var cookie_string = name + "=" + escape(value);
+
+        var expires = new Date();
+        expires.setTime(expires.getTime() + 86400000);
+        cookie_string += "; expires=" + expires.toGMTString();
+
+        document.cookie = cookie_string;
+    }
+
+    function delete_cookie ( cookie_name ) {
+
+        var cookie_date = new Date();  // current date & time
+        cookie_date.setTime(cookie_date.getTime() - 1);
+        document.cookie = cookie_name += "=; expires=" + cookie_date.toGMTString();
+    }
+
+    var cookie_name = 'autosave#' + extEl.id;
+    var autosave = get_cookie(cookie_name);
+
+    if (autosave.length) {
+        extEl.dom.value = autosave;
+        delete_cookie(cookie_name);
+    }
+
+    extEl.dom.autosave = function() {
+        setTimeout(extEl.dom.autosave, 1000); // Autosave once a second
+        if (!extEl.dom.value.length) {
+            return;
+        }
+        set_cookie(cookie_name, extEl.dom.value);
+    }
+    setTimeout(extEl.dom.autosave, 1000); // Autosave once a second
 };
