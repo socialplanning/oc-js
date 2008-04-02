@@ -1863,7 +1863,7 @@ OC.CookieAutoSave = function(extEl) {
         return;
     }
 
-    var get_cookie = function(cname) {
+    function get_cookie(cname) {
         // Make sure the document supports cookies
         if (!document || !document.cookie || (0 == document.cookie.length)) {
             return '';
@@ -1886,7 +1886,7 @@ OC.CookieAutoSave = function(extEl) {
         return unescape(document.cookie.substring(start, end));
     }
 
-    function set_cookie(name, value, path, domain, secure) {
+    function set_cookie(name, value) {
 
         var cookie_string = name + "=" + escape(value);
 
@@ -1897,7 +1897,7 @@ OC.CookieAutoSave = function(extEl) {
         document.cookie = cookie_string;
     }
 
-    function delete_cookie ( cookie_name ) {
+    function delete_cookie (cookie_name) {
 
         var cookie_date = new Date();  // current date & time
         cookie_date.setTime(cookie_date.getTime() - 1);
@@ -1912,12 +1912,20 @@ OC.CookieAutoSave = function(extEl) {
         delete_cookie(cookie_name);
     }
 
+    extEl.dom.enable_autosave = true;
     extEl.dom.autosave = function() {
-        setTimeout(extEl.dom.autosave, 1000); // Autosave once a second
+    	if (!extEl.dom.enable_autosave) {
+            return;
+	}
+        setTimeout(extEl.dom.autosave, 500); // Autosave once a second
         if (!extEl.dom.value.length) {
             return;
         }
         set_cookie(cookie_name, extEl.dom.value);
     }
-    setTimeout(extEl.dom.autosave, 1000); // Autosave once a second
+    extEl.dom.disable_autosave = function() {
+        extEl.dom.enable_autosave = true;
+        delete_cookie(cookie_name);
+    }
+    setTimeout(extEl.dom.autosave, 500); // Autosave once a second
 };
