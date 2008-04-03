@@ -28,6 +28,8 @@ setup(name='oc-js',
       zip_safe=False,
       install_requires=[
           'topp.utils>=0.2.8.9',
+          # For resource compression:
+          'webhelpers',
       ],
       entry_points="""
       [distutils.commands]
