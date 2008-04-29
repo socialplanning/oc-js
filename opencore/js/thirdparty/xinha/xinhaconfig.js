@@ -158,7 +158,7 @@ function _XC_init() {
     return;
   }
 
-  if (!HTMLArea.loadPlugins(_XC_plugins, function() { _XC_init(editor); })) {
+  if (!Xinha.loadPlugins(_XC_plugins, function() { _XC_init(editor); })) {
     // the plugins couldn't be loaded on this pass, but the initialization will
     // automatically be called again after a timeout
 
@@ -169,7 +169,7 @@ function _XC_init() {
   // the plugins were properly initialized
 
   // load the plugins
-  HTMLArea.loadPlugins(_XC_plugins);
+  Xinha.loadPlugins(_XC_plugins);
 
   _XC_parse();
 }
@@ -966,7 +966,7 @@ var XinhaConfig = {
   },
 
   create : function(obj) {
-    return merge(new HTMLArea.Config(), obj, 0, true);
+    return merge(new Xinha.Config(), obj, 0, true);
   }
 };
 
@@ -1046,7 +1046,7 @@ function Editor(textarea) {
       return;
     }
 
-    if (!HTMLArea.loadPlugins(self.config.plugins, function() { self.pluginLoad(self); })) {
+    if (!Xinha.loadPlugins(self.config.plugins, function() { self.pluginLoad(self); })) {
       // the plugins couldn't be loaded on this pass, but the initialization will
       // automatically be called again after a timeout
          
@@ -1057,13 +1057,13 @@ function Editor(textarea) {
     // the plugins were properly initialized
 
     // load the plugins
-    HTMLArea.loadPlugins(self.config.plugins);
+    Xinha.loadPlugins(self.config.plugins);
 
     self.editorInit();
   };
 
   this.editorInit = function() {
-    this.config.editor = HTMLArea.makeEditors(
+    this.config.editor = Xinha.makeEditors(
       [this.id],
       this.config,
       this.config.plugins
@@ -1371,25 +1371,9 @@ function _XC_startEditors(editors) {
     }
   }
 
-  HTMLArea.startEditors(loaders);
+  Xinha.startEditors(loaders);
 }
 
-var xinha_editors = [];
-var pre_wysiwyg_onload = window.onload;
-window.onload = function() {
-  if (pre_wysiwyg_onload) {
-    pre_wysiwyg_onload();
-  }
-
-  var w = __get_wysiwygs();
-
-  xinha_editors = [];
-  for (var i = 0; i < w.length; i++) {
-    xinha_editors.pushOrExtendIfNew(new Editor(w[i]));
-  }
-
-  _XC_startEditors(xinha_editors);
-};
 /* =============================================================================
 * xinhaconfig.js
 *
@@ -1550,7 +1534,7 @@ function _XC_init() {
     return;
   }
 
-  if (!HTMLArea.loadPlugins(_XC_plugins, function() { _XC_init(editor); })) {
+  if (!Xinha.loadPlugins(_XC_plugins, function() { _XC_init(editor); })) {
     // the plugins couldn't be loaded on this pass, but the initialization will
     // automatically be called again after a timeout
 
@@ -1561,7 +1545,7 @@ function _XC_init() {
   // the plugins were properly initialized
 
   // load the plugins
-  HTMLArea.loadPlugins(_XC_plugins);
+  Xinha.loadPlugins(_XC_plugins);
 
   _XC_parse();
 }
@@ -2358,7 +2342,7 @@ var XinhaConfig = {
   },
 
   create : function(obj) {
-    return merge(new HTMLArea.Config(), obj, 0, true);
+    return merge(new Xinha.Config(), obj, 0, true);
   }
 };
 
@@ -2438,7 +2422,7 @@ function Editor(textarea) {
       return;
     }
 
-    if (!HTMLArea.loadPlugins(self.config.plugins, function() { self.pluginLoad(self); })) {
+    if (!Xinha.loadPlugins(self.config.plugins, function() { self.pluginLoad(self); })) {
       // the plugins couldn't be loaded on this pass, but the initialization will
       // automatically be called again after a timeout
          
@@ -2449,13 +2433,13 @@ function Editor(textarea) {
     // the plugins were properly initialized
 
     // load the plugins
-    HTMLArea.loadPlugins(self.config.plugins);
+    Xinha.loadPlugins(self.config.plugins);
 
     self.editorInit();
   };
 
   this.editorInit = function() {
-    this.config.editor = HTMLArea.makeEditors(
+    this.config.editor = Xinha.makeEditors(
       [this.id],
       this.config,
       this.config.plugins
@@ -2763,7 +2747,7 @@ function _XC_startEditors(editors) {
     }
   }
 
-  HTMLArea.startEditors(loaders);
+  Xinha.startEditors(loaders);
 }
 
 var xinha_editors = [];
