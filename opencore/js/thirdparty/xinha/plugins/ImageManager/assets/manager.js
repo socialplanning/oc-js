@@ -78,6 +78,8 @@
 			document.getElementById("orginal_height").value = param["f_height"];
 			setAlign(param["f_align"]);
 
+      /* TOPP: removing this: */
+      /*
       // Locate to the correct directory
       var dreg = new RegExp('^(.*/)([^/]+)$');
       if(dreg.test(param['f_url']) && !(new RegExp('^https?://','i')).test(param['f_url']))
@@ -94,11 +96,17 @@
         }
       }
       document.getElementById('f_preview').src = _backend_url + '__function=thumbs&img=' + param.f_url;      
+      */
+      /* TOPP: ending removal */
 		}
 		
+    /* TOPP: removing color picker */
+    /*
 		 // Hookup color pickers
     new Xinha.colorPicker.InputBinding(document.getElementById('f_backgroundColor'));
     new Xinha.colorPicker.InputBinding(document.getElementById('f_borderColor'));
+    */
+    /* TOPP: ending removal */
 
 		document.getElementById("f_alt").focus();
 	};
@@ -113,7 +121,8 @@
 	function onOK() 
 	{
 		// pass data back to the calling window
-		var fields = ["f_url", "f_alt", "f_align", "f_width", "f_height", "f_padding", "f_margin", "f_border", "f_borderColor", "f_backgroundColor"];
+		/* TOPP: removed "f_borderColor" and "f_backgroundColor": */
+		var fields = ["f_url", "f_alt", "f_align", "f_width", "f_height", "f_padding", "f_margin", "f_border"];
 		var param = new Object();
 		for (var i in fields) 
 		{
@@ -136,6 +145,8 @@
 
 		}
 
+    /* TOPP: removed */
+    /*
     // See if we need to resize the image
     var origsize =
     {
@@ -155,7 +166,8 @@
         param.f_url = makeURL(base_url, resized);
       }
     }
-
+    */
+    /* TOPP: end removal */
 
 		__dlg_close(param);
 		return false;
@@ -173,7 +185,8 @@
 		return pathA+pathB;
 	}
 
-
+	/* TOPP: removed */
+	/*
 	function updateDir(selection) 
 	{
 		var newDir = selection.options[selection.selectedIndex].value;
@@ -215,6 +228,9 @@
 	    imgManager.changeDir(newDir);
     }
 	}
+	*/
+	/*: TOPP: end removal */
+
 
 	function toggleConstrains(constrains) 
 	{
@@ -290,6 +306,8 @@
 			showMessage('Uploading');
 	}
 
+	/* TOPP: removed */
+	/*
 	function refresh()
 	{
 		var selection = document.getElementById('dirPath');
@@ -337,5 +355,7 @@
 			createFolder(folder);
 		}
 	}
-  
+	*/
+	/* TOPP: end removal */
+
 	addEvent(window, 'load', init);

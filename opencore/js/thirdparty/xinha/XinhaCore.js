@@ -1037,8 +1037,14 @@ Xinha.Config = function()
 
     inserthorizontalrule: [ "Horizontal Rule", ["ed_buttons_main.gif",6,0], false, function(e) { e.execCommand("inserthorizontalrule"); } ],
     createlink: [ "Insert Web Link", ["ed_buttons_main.gif",6,1], false, function(e) { e._createLink(); } ],
+    /* TOPP: change button:
     insertimage: [ "Insert/Modify Image", ["ed_buttons_main.gif",6,3], false, function(e) { e.execCommand("insertimage"); } ],
+    */
+    insertimage: [ "Insert/Modify Image", 'image.gif', false, function(e) { e.execCommand("insertimage"); } ],
+    /* TOPP: change button:
     inserttable: [ "Insert Table", ["ed_buttons_main.gif",6,2], false, function(e) { e.execCommand("inserttable"); } ],
+    */
+    inserttable: [ "Insert Table", 'table.gif', false, function(e) { e.execCommand("inserttable"); } ],
 
     htmlmode: [ "Toggle HTML Source", ["ed_buttons_main.gif",7,0], true, function(e) { e.execCommand("htmlmode"); } ],
     toggleborders: [ "Toggle Borders", ["ed_buttons_main.gif",7,2], false, function(e) { e._toggleBorders(); } ],
@@ -1591,7 +1597,20 @@ Xinha.prototype._createToolbar1 = function (editor, toolbar, tb_objects)
         // == "formatblock" we retrieve config.formatblock (or
         // a different way to write it in JS is
         // config["formatblock"].
-        options = editor.config[txt];
+        /* TOPP: changed from "options = editor.config[txt];": */
+        options = {};
+        for (var i in editor.config[txt])
+        {
+          val = editor.config[txt][i];
+          if (typeof val == 'object') {
+            options[i] = val.tag;
+          }
+          else
+          {
+            options[i] = val;
+          }
+        }
+        /* TOPP: end addition */
         cmd = txt;
       break;
       default:
@@ -1803,6 +1822,15 @@ Xinha.prototype._createToolbar1 = function (editor, toolbar, tb_objects)
         }
       };
       
+      /* TOPP: Added: */
+      // check if we need to append a text node to the element
+      if (i_contain.imgText) {
+          var txtNode = document.createTextNode(i_contain.imgText);
+          el.appendChild(txtNode);
+          el.style.width = 'auto';
+      }
+      /* TOPP: end addition */
+
     }
     else if( !el )
     {
@@ -1873,6 +1901,18 @@ Xinha.prototype._createToolbar1 = function (editor, toolbar, tb_objects)
   return toolbar;
 };
 
+/* TOPP: Added: */
+//XXX this should move to configuration
+// I tried setting it up, but couldn't get Xinha to access it
+// from the context that it was in
+buttonTexts = {
+    '/++resource++xinha/images/table.gif': 'Table',
+    '/++resource++xinha/images/link.gif': 'Link',
+    '/++resource++xinha/images/image.gif': 'Image'
+    };
+/* TOPP: end addition */
+
+
 // @todo : is this some kind of test not finished ?
 //         Why the hell this is not in the config object ?
 var use_clone_img = false;
@@ -1910,6 +1950,8 @@ Xinha.makeBtnImg = function(imgDef, doc)
   i_contain.className = 'buttonImageContainer';
 
   var img = null;
+  /* TOPP: added line: */
+  imgText = null;
   if ( typeof imgDef == 'string' )
   {
     if ( doc._xinhaImgCache[imgDef] )
@@ -1920,6 +1962,8 @@ Xinha.makeBtnImg = function(imgDef, doc)
     {
       img = doc.createElement("img");
       img.src = imgDef;
+      /* TOPP: added line: */
+      imgText = buttonTexts[imgDef];
       img.style.width = "18px";
       img.style.height = "18px";
       if ( use_clone_img )
@@ -1951,6 +1995,22 @@ Xinha.makeBtnImg = function(imgDef, doc)
     img.style.left = imgDef[1] ? ('-' + (18 * (imgDef[1] + 1)) + 'px') : '-18px';
   }
   i_contain.appendChild(img);
+  /* TOPP: added */
+  // make text on image appear next to image and stretch
+  if (imgText) {
+      // store image directly as property to let
+      // caller know to append a text node
+      i_contain.imgText = imgText;
+
+      i_contain.style.position = '';
+      i_contain.style.overflow = '';
+      i_contain.style.width = '';
+      i_contain.style.height = '';
+      i_contain.style.display = 'inline';
+      i_contain.style.paddingRight = '0.5em';
+  }
+  /* TOPP: end addition */
+
   return i_contain;
 };
 /** creates the status bar 
@@ -2350,6 +2410,16 @@ Xinha.prototype.generate = function ()
           {
              editor._iframeLoadDone = true;
              editor.initIframe();
+             /* TOPP: added */
+             // FIXME: focusing does not work here unless we wait for some time
+             // 1.5 seconds appeared to be a good balance between making sure
+             // that everything is loaded, and not looking like we're waiting
+             _focusEditor = function() {
+                 Xinha._someEditorHasBeenActivated = true;
+                 editor.focusEditor();
+               };
+             setTimeout(_focusEditor, 1500);
+             /* TOPP: end addition */
           }
           return true;
         }
@@ -2516,6 +2586,12 @@ Xinha.prototype.sizeEditor = function(width, height, includingBars, includingPan
   // now we size the INNER area and position stuff in the right places.
   width  = this._htmlArea.offsetWidth;
   height = this._htmlArea.offsetHeight;
+  /* TOPP: added */
+  // for IE in fullscreen mode the offsetWidth isn't correct so we need to hack
+  if (Xinha.is_ie && this._isFullScreen){
+      width = parseInt(this._htmlArea.style.width);
+  }
+  /* TOPP: end addition */
 
   // Set colspan for toolbar, and statusbar, rowspan for left & right panels, and insert panels to be displayed
   // into thier rows
@@ -2976,6 +3052,8 @@ Xinha.prototype.initIframe = function()
     }
     
     html += "</head>\n";
+    /* TOPP: fixme: we need to use the editor.config.bodyID and adjust our CSS, because right now
+       it uses class="oc-wiki-content" instead of an id.  Or add a class configuration here. */
     html += "<body" + (editor.config.bodyID ? (" id=\"" + editor.config.bodyID + "\"") : '') + ">\n";
     html +=   editor.inwardHtml(editor._textArea.value);
     html += "</body>\n";
@@ -3967,6 +4045,14 @@ Xinha.prototype.updateToolbar = function(noStatus)
         {
           txt += "#" + el.id;
         }
+        /* TOPP: this was used for the oc-wiki-content class name:
+          // FIXME: do not show oc-wiki-content
+          if ( el.className && el.className != 'oc-wiki-content')
+          {
+              txt += "." + el.className;
+          }
+        */
+
         if ( el.className )
         {
           txt += "." + el.className;
@@ -4091,24 +4177,44 @@ Xinha.prototype.updateToolbar = function(noStatus)
       //  to call your heading blocks 'header 1'.  Stupid MS.
       case "formatblock":
         var blocks = [];
+        /* TOPP: changed: */
         for ( var indexBlock in this.config.formatblock )
         {
-          // prevent iterating over wrong type
-          if ( typeof this.config.formatblock[indexBlock] == 'string' )
+          var blockItem = this.config.formatblock[indexBlock];
+          if (typeof blockItem == 'object')
           {
-            blocks[blocks.length] = this.config.formatblock[indexBlock];
+            blocks[blocks.length] = blockItem.detect || blockItem.tag;
+          }
+          else if (typeof blockItem == 'string')
+          {
+            blocks[blocks.length] = blockItem;
           }
         }
+        /* TOPP: end change */
 
         var deepestAncestor = this._getFirstAncestor(this.getSelection(), blocks);
         if ( deepestAncestor )
         {
           for ( var x = 0; x < blocks.length; x++ )
           {
+            /* TOPP: changed from:
             if ( blocks[x].toLowerCase() == deepestAncestor.tagName.toLowerCase() )
+              btn.element.selectedIndex = x;
+            */
+            if (typeof blocks[x] == 'function')
+            {
+              if (blocks[x](this, deepestAncestor))
+              {
+                btn.element.selectedIndex = x;
+                break;
+              }
+            }
+            else if ( blocks[x].toLowerCase() == deepestAncestor.tagName.toLowerCase() ) 
             {
               btn.element.selectedIndex = x;
+              break;
             }
+            /* TOPP: end changes */
           }
         }
         else
@@ -4263,10 +4369,22 @@ Xinha.prototype._getFirstAncestor = function(sel, types)
       {
         return prnt;
       }
+      /* TOPP: changed from this:
       if ( types.contains(prnt.tagName.toLowerCase()) )
       {
         return prnt;
       }
+      */
+      for (var i=0; i<5; i++) {
+        if (typeof types[i] == 'string' && types[i] == prnt.tagName.toLowerCase()){
+          return prnt;
+        }
+        else if (typeof types[i] == 'function' && types[i](this, prnt)) {
+          return prnt;
+        }
+      }
+      /* TOPP: end change */
+
       if ( prnt.tagName.toLowerCase() == 'body' )
       {
         break;
@@ -4409,11 +4527,34 @@ Xinha.prototype._comboSelected = function(el, txt)
       	this.updateToolbar();
       	break;
       }
+      /* TOPP: added */
+      var invoker = null;
+      for (var i in this.config.formatblock)
+      {
+        var val = this.config.formatblock[i];
+        if (typeof val == 'object'
+            && val.tag == value)
+        {
+          invoker = val.invoker || null;
+          break;
+        }
+      }
+      /* TOPP: end add */
+
       if( !Xinha.is_gecko || value !== 'blockquote' )
       {
         value = "<" + value + ">";
       }
-      this.execCommand(txt, false, value);
+      /* TOPP: changed/added: */
+      if (invoker) 
+      {
+        invoker(this);
+      }
+      else
+      {
+        this.execCommand(txt, false, value);
+      }
+      /* TOPP: end change/add */
     break;
     default:
       // try to look it up in the registered dropdowns
@@ -4519,6 +4660,10 @@ Xinha.prototype.execCommand = function(cmdID, UI, param)
   switch (cmdID)
   {
     case "htmlmode":
+      /* TOPP: added */
+      this._textArea.style.visibility = "visible"
+      this._textArea.style.overflow = "auto"
+      /* TOPP: end addition */
       this.setMode();
     break;
 

@@ -22,15 +22,14 @@
 
 function ImageManager(editor)
 {
-
 }
 
 ImageManager._pluginInfo = {
-	name          : "ImageManager",
-	version       : "1.0",
-	developer     : "Xiang Wei Zhuo",
-	developer_url : "http://www.zhuo.org/htmlarea/",
-	license       : "htmlArea"
+    name          : "ImageManager",
+    version       : "1.0",
+    developer     : "Xiang Wei Zhuo",
+    developer_url : "http://www.zhuo.org/htmlarea/",
+    license       : "htmlArea"
 };
 
 
@@ -65,7 +64,8 @@ ImageManager._pluginInfo = {
 
 Xinha.Config.prototype.ImageManager =
 {
-  'backend'    : _editor_url + 'plugins/ImageManager/backend.php?__plugin=ImageManager&',
+  /* TOPP: changed from _editor_url + 'plugins/ImageManager/backend.php?__plugin=ImageManager&' : */
+  'backend'    : 'backend?',
   'backend_data' : null,
   
   // Deprecated method for passing config, use above instead!
@@ -107,9 +107,13 @@ Xinha.prototype._insertImage = function(image) {
 			f_padding: image.style.padding,
 			f_margin : image.style.margin,
 			f_width  : image.width,
-			f_height  : image.height,
+			f_height  : image.height
+      /* TOPP: removed */
+      /*
       f_backgroundColor: image.style.backgroundColor,
       f_borderColor: image.style.borderColor
+      */
+      /* TOPP: end removal */
 			};
 
     function shortSize(cssSize)
@@ -182,6 +186,18 @@ Xinha.prototype._insertImage = function(image) {
     }
   }
   
+  /* TOPP: added */
+  // check if we are on looking on a blog, in which case we have to make the url absolute
+  // to hit zope properly
+
+  url = window.location.href;
+  result = /(.*\/)blog\//.exec(url);
+  if (result && result.length == 2) {
+      urlPrefix = result[1];
+      manager = urlPrefix + 'project-home/' + manager;
+  }
+  /* TOPP: end addition */
+
 	Dialog(manager, function(param) {
 		if (!param) {	// user must have pressed Cancel
 			return false;
@@ -226,8 +242,12 @@ Xinha.prototype._insertImage = function(image) {
           }
           break;
           
+          /* TOPP: removed */
+          /*
           case "f_borderColor": img.style.borderColor = value; break;
           case "f_backgroundColor": img.style.backgroundColor = value; break;
+          */
+          /* TOPP: end removal */
             
           case "f_padding": 
           {

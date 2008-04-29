@@ -9,6 +9,8 @@
         return Xinha._lc(str, 'ImageManager');
 	}
 
+	/* TOPP: removed */
+	/*
 	function changeDir(newDir) 
 	{
 		showMessage('Loading');
@@ -43,6 +45,8 @@
 			}		
 		}
 	}
+	*/
+	/* TOPP: end removal */
 
 	function selectImage(filename, alt, width, height) 
 	{
@@ -55,10 +59,7 @@
 		var obj = topDoc.getElementById('f_alt'); obj.value = alt;
 		var obj = topDoc.getElementById('orginal_width'); obj.value = width;
 		var obj = topDoc.getElementById('orginal_height'); obj.value = height;		
-    // Set preview for the selected
-    topDoc.getElementById('f_preview').src = window.parent._backend_url + '__function=thumbs&img=' + filename;
-    
-    update_selected();
+		update_selected();
 	}
 
   var _current_selected = null;
@@ -72,17 +73,11 @@
     }
     // Grab the current file, and highlight it if we have it
     var c_file = topDoc.getElementById('f_url').value;
-    var selection = topDoc.getElementById('dirPath');
-		var currentDir = selection.options[selection.selectedIndex].text;
-    var dRe = new RegExp('^(' + currentDir.replace(/([\/\^$*+?.()|{}[\]])/g, '\\$1') + ')([^/]*)$');
-    if(dRe.test(c_file))
-    {
-      var holder = document.getElementById('holder_' + asc2hex(RegExp.$2));
-      if(holder)
-      {
+
+    var holder = document.getElementById('holder_' + c_file);
+    if(holder) {
         _current_selected = holder;
         holder.className += ' active';
-      }
     }
   }
 
@@ -128,20 +123,6 @@
 			return true;
 	
 		return false;		
-	}
-
-	function confirmDeleteDir(dir, count) 
-	{
-		if(count > 0)
-		{
-			alert(i18n("Please delete all files/folders inside the folder you wish to delete first."));
-			return;
-		}
-
-		if(confirm(i18n("Delete folder?"))) 
-			return true;
-
-		return false;
 	}
 
 	addEvent(window, 'load', init);
