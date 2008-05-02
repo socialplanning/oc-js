@@ -2141,7 +2141,8 @@ Xinha.prototype.generate = function ()
   {
     return false;
   }
-  
+  editor.registerPlugin('FullScreen');  
+
   url = _editor_url + 'modules/ColorPicker/ColorPicker.js';
   if ( !Xinha.loadPlugins(["ColorPicker"], function() { editor.generate(); } , url ) )
   {
