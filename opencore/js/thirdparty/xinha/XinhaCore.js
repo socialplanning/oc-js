@@ -1802,6 +1802,7 @@ Xinha.prototype.generate = function ()
       'submit',
       function()
       {
+        editor.firePluginEvent('onBeforeSubmit');
         editor._textArea.value = editor.outwardHtml(editor.getHTML());
         return true;
       }
