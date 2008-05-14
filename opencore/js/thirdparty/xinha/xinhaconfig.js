@@ -144,7 +144,8 @@ var _XC_plugins = [
       'SuperClean',
       'TableOperations',
       'Template',
-      'UnFormat'
+      'UnFormat',
+      'UnsavedChanges'
     ], ls_url;
 
 function _XC_init() {
@@ -702,7 +703,8 @@ var XinhaConfig = {
  'SpellChecker',
  'Stylist',
  'SuperClean',
- 'TableOperations'
+ 'TableOperations',
+ 'UnsavedChanges'
     ],
     showLoading : false,
     statusBar : false,
@@ -731,7 +733,8 @@ var XinhaConfig = {
     plugins : [
       'FindReplace',
       'FullPage',
-      'HtmlEntities'
+      'HtmlEntities',
+      'UnsavedChanges'
     ],
     showLoading : false,
     statusBar : true,
@@ -854,7 +857,8 @@ var XinhaConfig = {
       'InternalLink',
       'FullScreen',
       'GetHtml',
-      'TableOperations'
+      'TableOperations',
+      'UnsavedChanges'
     ],
     showLoading : false,
     statusBar : false,
@@ -898,7 +902,8 @@ var XinhaConfig = {
       'HtmlEntities',
       'Stylist',
       'TableOperations',
-      'Forms'
+      'Forms',
+      'UnsavedChanges'
     ],
     showLoading : false,
     statusBar : true,
@@ -942,7 +947,8 @@ var XinhaConfig = {
       'SpellChecker',
       'Stylist',
       'SuperClean',
-      'TableOperations'
+      'TableOperations',
+      'UnsavedChanges'
     ],
     showLoading : false,
     statusBar : true,
