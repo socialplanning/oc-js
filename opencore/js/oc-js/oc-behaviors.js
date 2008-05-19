@@ -1703,7 +1703,11 @@ OC.GMap = function(extEl) {
 
     if (typeof(marker) != 'undefined' && marker) {
         map.addOverlay(marker);
+        marker.openInfoWindowHtml("Drag the pin to adjust location.");
         GEvent.addListener(marker, 'dragend', dropHandler);
+        GEvent.addListener(marker, 'dragstart', function () {
+            map.closeInfoWindow();
+        });
     }
 
     var geocoder = new GClientGeocoder();
