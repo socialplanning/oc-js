@@ -1620,7 +1620,7 @@ OC.GMap = function(extEl) {
 
         // Create the controls used to update the map
         //var control_text = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'text'}, true);
-        var control_text = Ext.get('position-text');
+        var control_text = Ext.get('location');
         var control_button = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'button', value: 'Go'}, true);
         Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'br'});
         var control_error = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'span', cls: 'oc-form-error'}, true);
