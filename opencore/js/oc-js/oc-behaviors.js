@@ -1619,12 +1619,9 @@ OC.GMap = function(extEl) {
         }
 
         // Create the controls used to update the map
-        //var control_text = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'text'}, true);
         var control_text = Ext.get('location');
-        var control_button = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'input', type: 'button', value: 'Go'}, true);
-        Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'br'});
-        var control_error = Ext.DomHelper.insertBefore(mapdiv.dom, {tag: 'span', cls: 'oc-form-error'}, true);
-    
+        var control_button = Ext.get('oc-map-update-button');
+        var control_error = Ext.get('oc-map-errors');
         // Function that takes a geocoder response and adjusts the map accordingly
         var updateMap = function(response) {
           if (!response || response.Status.code != 200) {
@@ -1636,7 +1633,6 @@ OC.GMap = function(extEl) {
             var point = new GLatLng(place.Point.coordinates[1],
                                 place.Point.coordinates[0]);
             var marker = new GMarker(point, {draggable: true});
-    
             input_latitude.dom.value = point.lat();
             input_longitude.dom.value = point.lng();
     
@@ -1651,8 +1647,10 @@ OC.GMap = function(extEl) {
                 input_longitude.dom.value = point.lng();
             });
     
-            map.addOverlay(marker);
             map.setCenter(point, 15);
+            map.addOverlay(marker);
+            marker.openInfoWindowHtml("Drag the pin to adjust location.");
+
           }
         }
     
@@ -1699,7 +1697,7 @@ OC.GMap = function(extEl) {
         input_longitude.dom.value = this.getLatLng().lng();
     }
 
-    map.setCenter(center, 13);
+    map.setCenter(center, 15);
 
     if (typeof(marker) != 'undefined' && marker) {
         map.addOverlay(marker);
