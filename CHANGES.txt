@@ -1,0 +1,55 @@
+0.5.0 (2008-05-27)
+==================
+
+(deployed to openplans.org on 5/15/08, with bogus version
+oc_js-0.3.1dev_r16915-py2.4.egg)
+
+Partial changelog reconstructed from svn commits:
+
+ * New UnsavedChanges xinha plugin (douglas)
+ * Import disable functionality from streetsblog (douglas)
+ * Vacuum: autosave the comment field (ticket #2476) (douglas)
+
+
+0.4.1 (2008-01-10)
+==================
+
+Partial changelog reconstructed from svn commits:
+
+ * Remove firebug (egj, rob)
+ * Cleanup & documentation (novalis)
+ * new oc-js-unhide behavior, for unhiding js ui on page load; use
+   this alongside a noscript tag for degradation.  Doug has doubts
+   whether this plays nicely with clients that lack both JS and CSS
+   support since they'd see both elements. (pw)
+ * Fix a bug in breathelife preventing multiple behaviors on a single
+   element (douglas)
+ * Add new MemberList behavior for dynamically building a list of
+   members and validating that they exist (douglas)
+ * In-progress work on google maps stuff (not used in any opencore
+   release yet) (pw, douglas)
+
+0.4.0 (2007-12-13)
+==================
+
+Partial changelog reconstructed from svn commits:
+
+ * Get IE to cooperate in fullscreen mode (#1937) (cabraham)
+ * Remove Project Delete function so we can use generic confirmation
+   code (douglas)
+ * Fix pullquote application for ie (#1915) (cabraham)
+ * Fix scrollbar visibility for firefox on a mac (#1877) (cabraham)
+
+
+0.3.1 (2007-12-03)
+==================
+
+No changelog was kept before this.
+
+Apparently releases 0.2-0.3.0 did not exist?
+
+
+0.1 (????-??-??)
+================
+
+Initial release.
