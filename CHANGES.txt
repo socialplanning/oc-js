@@ -1,8 +1,9 @@
 0.5.1dev (unreleased)
 =====================
 
- * Add initial marker hint dialog to google maps UI (pw)
- * Use 'location' instead of 'position-text' for the maps UI (pw)
+ * For maps UI, unhide existing dom elements instead of inserting new ones (pw)
+ * Add initial marker hint balloon to google maps UI (pw)
+ * Use one 'location' field and no redundant 'position-text' for the maps UI (pw)
 
 0.5.0 (2008-05-27)
 ==================
