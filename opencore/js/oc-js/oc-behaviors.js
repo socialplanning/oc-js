@@ -1649,8 +1649,8 @@ OC.GMap = function(extEl) {
     
             map.setCenter(point, 15);
             map.addOverlay(marker);
-            marker.openInfoWindowHtml("Drag the pin to adjust location.");
-
+            marker.openInfoWindowHtml("Drag the pin to adjust location.",
+              {maxWidth: 180}); // @@ Broken! implicit minimum of 200!
           }
         }
     
@@ -1701,7 +1701,8 @@ OC.GMap = function(extEl) {
 
     if (typeof(marker) != 'undefined' && marker) {
         map.addOverlay(marker);
-        marker.openInfoWindowHtml("Drag the pin to adjust location.");
+        marker.openInfoWindowHtml("Drag the pin to adjust location.",
+            {maxWidth: 180}); // @@ Broken, there's an implicit minimum of 200!
         GEvent.addListener(marker, 'dragend', dropHandler);
         GEvent.addListener(marker, 'dragstart', function () {
             map.closeInfoWindow();
