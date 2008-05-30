@@ -51,7 +51,8 @@ OC.liveElementKey.Class = {
     "oc-js-closeable"        : "CloseButton",
     "oc-directEdit"          : "DirectEdit",
     "oc-js-unhide"           : "RevealElement",
-    "oc-js-autosave"         : "CookieAutoSave"
+    "oc-js-autosave"         : "CookieAutoSave",
+    "oc-js-compactPassword"  : "CompactPassword"
 };
 OC.liveElementKey.Id = {
     "version_compare_form"   : "HistoryList",
@@ -1931,4 +1932,60 @@ OC.CookieAutoSave = function(extEl) {
         delete_cookie(cookie_name);
     }
     setTimeout(extEl.dom.autosave, 500); // Autosave once a second
+};
+
+// Add a 'password' hint to compact login forms
+OC.CompactPassword = function(passField) {
+    // Prettify inline password fields 
+    if( document.createElement && document.childNodes ) { 
+
+        // We'll create an input text element to mirror the password, copying
+        // the password element's classes.  The shadow text element will have
+        // the text 'password' inside, and will switch itself out with the real
+        // password element when focused.  If the password field is left blank
+        // when focus is lost, then the hint field will be restored.
+        var hintField = document.createElement('input'); 
+        hintField.setAttribute('type','text'); 
+        hintField.setAttribute('value','password'); 
+        hintField.setAttribute('class',passField.dom.className); 
+
+        // Place the hint field just before the real field
+        passField.dom.parentNode.insertBefore(hintField, passField.dom); 
+
+        // Turn our reference into an Ext.Element to make it easier to work with
+        hintField = Ext.get(hintField); 
+
+        // Set up both fields to use the display propert for visibility
+        passField.enableDisplayMode(); 
+        hintField.enableDisplayMode(); 
+
+        // Hide the password field and show the hint field if the password
+        // field is empty
+        if ('' == passField.dom.value) {
+            passField.hide(); 
+            hintField.show(); 
+        } else {
+            passField.show(); 
+            hintField.hide(); 
+        }
+
+        // When clicking on the hint field, we want to replace it with the real
+        // password field, and be sure it receives the focus, so as not to
+        // confuse the user.
+        hintField.addListener('focus', function() { 
+            hintField.hide(); 
+            passField.show(); 
+            passField.focus(); 
+        }); 
+
+        // When losing focus, we only restore the hint field if there is no
+        // password entered into the field.
+        passField.addListener('blur', function() { 
+            if (passField.dom.value != '') { 
+                return; 
+            } 
+            hintField.show(); 
+            passField.hide(); 
+        }); 
+    } 
 };
