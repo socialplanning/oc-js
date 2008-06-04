@@ -1928,9 +1928,16 @@ OC.CookieAutoSave = function(extEl) {
         set_cookie(cookie_name, extEl.dom.value);
     }
     extEl.dom.disable_autosave = function() {
-        extEl.dom.enable_autosave = true;
+        extEl.dom.enable_autosave = false;
         delete_cookie(cookie_name);
     }
+
+    // On submit, we'll clear the cookie,,,
+    var parentForm = extEl.findParentNode('form');
+    if (parentForm) {
+        Ext.get(parentForm).addListener('submit', extEl.dom.disable_autosave);
+    }
+
     setTimeout(extEl.dom.autosave, 500); // Autosave once a second
 };
 
