@@ -1955,6 +1955,9 @@ OC.CompactPassword = function(passField) {
         hintField.setAttribute('type','text'); 
         hintField.setAttribute('value','password'); 
         hintField.setAttribute('class',passField.dom.className); 
+        // We have to set both cases of this property to support all browsers
+        hintField.setAttribute('tabindex',passField.dom.tabIndex); 
+        hintField.setAttribute('tabIndex',passField.dom.tabIndex); 
 
         // Place the hint field just before the real field
         passField.dom.parentNode.insertBefore(hintField, passField.dom); 
