@@ -1586,6 +1586,8 @@ OC.GMap = function(extEl) {
         return;
     } 
 
+    var is_static_map = (mapdiv.hasClass('oc-js-static-gmap'));
+
     // If we have a parent form, we'll put in a submit blocker when the text control has focus, and add some inputs.
     var parent_form = mapdiv.up('form');
 
@@ -1633,7 +1635,7 @@ OC.GMap = function(extEl) {
             var place = response.Placemark[0];
             var point = new GLatLng(place.Point.coordinates[1],
                                 place.Point.coordinates[0]);
-            var marker = new GMarker(point, {draggable: true});
+            var marker = new GMarker(point, {draggable: !is_static_map});
             input_latitude.dom.value = point.lat();
             input_longitude.dom.value = point.lng();
     
@@ -1650,8 +1652,9 @@ OC.GMap = function(extEl) {
     
             map.setCenter(point, 15);
             map.addOverlay(marker);
-            marker.openInfoWindowHtml("Drag the pin to adjust location.",
-              {maxWidth: 180}); // @@ Broken! implicit minimum of 200!
+            if( !is_static_map )
+              marker.openInfoWindowHtml("Drag the pin to adjust location.",
+                 {maxWidth: 180}); // @@ Broken! implicit minimum of 200!
           }
         }
     
@@ -1690,7 +1693,7 @@ OC.GMap = function(extEl) {
     } else {
         // We have preexisting coordinates, so we'll make a marker.
         var center = new GLatLng(lat, lon);
-        var marker = new GMarker(center, {draggable: true});
+        var marker = new GMarker(center, {draggable: !is_static_map});
     }
 
     var dropHandler = function() {
@@ -1702,8 +1705,9 @@ OC.GMap = function(extEl) {
 
     if (typeof(marker) != 'undefined' && marker) {
         map.addOverlay(marker);
-        marker.openInfoWindowHtml("Drag the pin to adjust location.",
-            {maxWidth: 180}); // @@ Broken, there's an implicit minimum of 200!
+        if( !is_static_map )
+          marker.openInfoWindowHtml("Drag the pin to adjust location.",
+              {maxWidth: 180}); // @@ Broken, there's an implicit minimum of 200!
         GEvent.addListener(marker, 'dragend', dropHandler);
         GEvent.addListener(marker, 'dragstart', function () {
             map.closeInfoWindow();
