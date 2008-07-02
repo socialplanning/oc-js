@@ -1622,7 +1622,7 @@ OC.GMap = function(extEl) {
         }
 
         // Create the controls used to update the map
-        var control_text = Ext.get('location');
+        var control_text = Ext.get('geolocation');
         var control_button = Ext.get('oc-map-update-button');
         var control_error = Ext.get('oc-map-errors');
         // Function that takes a geocoder response and adjusts the map accordingly
