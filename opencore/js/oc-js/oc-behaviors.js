@@ -1588,9 +1588,6 @@ OC.GMap = function(extEl) {
 
     var is_static_map = (mapdiv.hasClass('oc-js-static-gmap'));
 
-    // If we have a parent form, we'll put in a submit blocker when the text control has focus, and add some inputs.
-    var parent_form = mapdiv.up('form');
-
     // Look for an existing latitude/longitude pair.
     var input_latitude = Ext.get(mapdiv.id + '-latitude');
     var input_longitude = Ext.get(mapdiv.id + '-longitude');
@@ -1602,7 +1599,14 @@ OC.GMap = function(extEl) {
     }
 
     // If we have a form, we need to hook up our UI.
-    if (parent_form != null) {
+    var control_button = Ext.get('oc-map-update-button');
+    if( !control_button ) {
+	OC.debug("no control button, must be a map just for viewing");
+    } else {
+
+        // If the control button has a parent form, we'll put in a submit blocker when the text control has focus, and add some inputs.
+        var parent_form = control_button.up('form');
+
         // If we don't have the coordinate inputs, we will create them.  If we do have elements
         // with inputs, we'll make sure they're elements we can use as inputs.
         if (!input_latitude) {
@@ -1623,7 +1627,6 @@ OC.GMap = function(extEl) {
 
         // Create the controls used to update the map
         var control_text = Ext.get('geolocation');
-        var control_button = Ext.get('oc-map-update-button');
         var control_error = Ext.get('oc-map-errors');
         // Function that takes a geocoder response and adjusts the map accordingly
         var updateMap = function(response) {
@@ -1675,8 +1678,6 @@ OC.GMap = function(extEl) {
         // Install onfocus and onblur handlers for the text control to handle the enter key.
         OC.SubmitBlocker.call(this, parent_form, control_text, control_button.geocode);
     
-    } else {
-	OC.debug("no parent form, must be a map just for viewing");
     }
 
     var map = new GMap2(document.getElementById(mapdiv.id));
