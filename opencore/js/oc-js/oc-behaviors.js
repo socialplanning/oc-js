@@ -52,7 +52,8 @@ OC.liveElementKey.Class = {
     "oc-directEdit"          : "DirectEdit",
     "oc-js-unhide"           : "RevealElement",
     "oc-js-autosave"         : "CookieAutoSave",
-    "oc-js-compactPassword"  : "CompactPassword"
+    "oc-js-compactPassword"  : "CompactPassword",
+    "oc-js-addWikiPage"      : "AddWikiPage"
 };
 OC.liveElementKey.Id = {
     "version_compare_form"   : "HistoryList",
@@ -2003,4 +2004,58 @@ OC.CompactPassword = function(passField) {
             passField.hide(); 
         }); 
     } 
+};
+
+// modify the add a wiki page link into a form that submits to create a page,
+// and then redirects to that page
+OC.AddWikiPage = function(extEl) {
+    var parent_div = extEl.up('div');
+    var anchor = extEl;
+    if (!parent_div) {
+        return;
+    }
+    anchor.on('click', function(e, el, o) {
+	    YAHOO.util.Event.stopEvent(e);
+        // should be as easy as the following
+        //var form_create_page = Ext.form.BasicForm(
+        //    'add-page-form',
+        //    { method: 'POST',
+        //      standardSubmit: true,
+        //      url: extEl.dom.href
+        //      });
+        //var page_title = new Ext.form.TextField({
+        //    allowBlank: false,
+        //    emptyText: 'Page title',
+        //    emptyClass: 'oc-discreetText',
+        //    invalidClass: 'oc-form-error',
+        //    fieldLabel: 'Title',
+        //    name: 'title'
+        //    });
+        //form_create_page.add(page_title);
+
+        form_div = Ext.DomHelper.append(parent_div,
+            { tag: 'div', style: 'margin-bottom: .5em' });
+        form = Ext.DomHelper.append(form_div,
+            { tag: 'form', method: 'POST', action: el.href },
+            true)
+        title_label = Ext.DomHelper.append(form, {
+            tag: 'label', htmlFor: 'page_title', html: 'Title',
+            style: 'margin-right: .5em'});
+        title_input = Ext.DomHelper.append(form, {
+            tag: 'input', type: 'text', id: 'page_title', name: 'title',
+            style: 'margin-right: .5em; width: 60%' });
+        btn = Ext.DomHelper.append(form,
+            { tag: 'input', type: 'submit', name: 'add', value: 'Add' });
+
+        // focusing the textfield makes this much more usable
+        Ext.get(title_input).focus();
+
+        // and we remove the link so we don't add another form
+        anchor.remove();
+
+        // it doesn't hurt to leave the form on the page if the user
+        // changes their mind does it?
+        // meaning we don't need to provide a cancel link that will
+        // revert back to the anchor and remove the form, right?
+    }, this);
 };
