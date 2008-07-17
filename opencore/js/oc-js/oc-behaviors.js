@@ -2006,8 +2006,8 @@ OC.CompactPassword = function(passField) {
     } 
 };
 
-// modify the add a wiki page link into a form that submits to create a page,
-// and then redirects to that page
+// modify the add a wiki page link into a form
+// that performs the submission to create the page
 OC.AddWikiPage = function(extEl) {
     var parent_div = extEl.up('div');
     var anchor = extEl;
@@ -2016,23 +2016,11 @@ OC.AddWikiPage = function(extEl) {
     }
     anchor.on('click', function(e, el, o) {
 	    YAHOO.util.Event.stopEvent(e);
-        // should be as easy as the following
-        //var form_create_page = Ext.form.BasicForm(
-        //    'add-page-form',
-        //    { method: 'POST',
-        //      standardSubmit: true,
-        //      url: extEl.dom.href
-        //      });
-        //var page_title = new Ext.form.TextField({
-        //    allowBlank: false,
-        //    emptyText: 'Page title',
-        //    emptyClass: 'oc-discreetText',
-        //    invalidClass: 'oc-form-error',
-        //    fieldLabel: 'Title',
-        //    name: 'title'
-        //    });
-        //form_create_page.add(page_title);
 
+        // XXX Ext has a real nice api for creating forms
+        // I tried using them here, but got an undefined for
+        // Ext.form.Form and Ext.form.BasicForm
+        // maybe when we upgrade we'll get to use those
         form_div = Ext.DomHelper.append(parent_div,
             { tag: 'div', style: 'margin-bottom: .5em' });
         form = Ext.DomHelper.append(form_div,
@@ -2050,12 +2038,14 @@ OC.AddWikiPage = function(extEl) {
         // focusing the textfield makes this much more usable
         Ext.get(title_input).focus();
 
-        // and we remove the link so we don't add another form
-        anchor.remove();
+        // XXX it would be nice to also provide inline validation to make sure
+        // that the title of the page was specified and is unique
 
-        // it doesn't hurt to leave the form on the page if the user
-        // changes their mind does it?
-        // meaning we don't need to provide a cancel link that will
-        // revert back to the anchor and remove the form, right?
+        // and we remove the link so the user can't add another form
+        // afaict, it doesn't hurt to leave the form on the page if the user
+        // changes their mind and no longer wants to add a page
+        // so I don't think we need to provide a mechanism for the user to
+        // cancel, which reverts back to the anchor and removes the form
+        anchor.remove();
     }, this);
 };
