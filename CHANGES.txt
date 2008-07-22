@@ -1,9 +1,31 @@
 0.5.1dev (unreleased)
 =====================
 
+ * add js to inline the add wiki page form when clicking on the link
+   (rmarianski)
+
+ * Added oc-js-static-map class to mark a map as non-draggable.
+   (egj)
+
+ * Use 'geolocation' form field instead of 'position-text'.
+   'location' will just be used for human-readable description. (egj, pw)
+
+ * Fixed http://trac.openplans.org/livablestreets/ticket/169
+   Copy tabIndex property so that IE users will properly tab through (douglas)
+
+ * Fixed http://trac.openplans.org/livablestreets/ticket/282 autosave
+   cookie clearing bug. Merged changes from streetsblog r17727
+   (douglas)
+
+ * Added oc-js-compactPassword behavior for password fields to receive a
+   'password' hint (douglas)
+
+ * Use zoom of 15 everywhere in maps code (pw)
+
  * For maps UI, unhide existing dom elements instead of inserting new ones (pw)
+
  * Add initial marker hint balloon to google maps UI (pw)
- * Use one 'location' field and no redundant 'position-text' for the maps UI (pw)
+
 
 0.5.0 (2008-05-27)
 ==================
