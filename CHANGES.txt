@@ -1,5 +1,6 @@
-0.5.1dev (unreleased)
-=====================
+
+0.6.0 (2008-07-22)
+==================
 
  * add js to inline the add wiki page form when clicking on the link
    (rmarianski)
