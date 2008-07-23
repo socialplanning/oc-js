@@ -2015,12 +2015,13 @@ OC.AddWikiPage = function(extEl) {
         return;
     }
     anchor.on('click', function(e, el, o) {
-	    YAHOO.util.Event.stopEvent(e);
-
         // XXX Ext has a real nice api for creating forms
         // I tried using them here, but got an undefined for
         // Ext.form.Form and Ext.form.BasicForm
         // maybe when we upgrade we'll get to use those
+        cancel = Ext.DomHelper.append(parent_div,
+            { tag: 'a', cls: 'oc-banana', href: '#' }, true);
+        cancel.dom.innerHTML = 'Cancel';
         form_div = Ext.DomHelper.append(parent_div,
             { tag: 'div', style: 'margin-bottom: .5em' });
         form = Ext.DomHelper.append(form_div,
@@ -2035,8 +2036,10 @@ OC.AddWikiPage = function(extEl) {
         btn = Ext.DomHelper.append(form,
             { tag: 'input', type: 'submit', name: 'add', value: 'Add' });
 
+	    Ext.get(form_div).slideIn('t',{duration: .1});
+
         // focusing the textfield makes this much more usable
-        Ext.get(title_input).focus();
+        setTimeout('Ext.get(title_input).focus()', 150);
 
         // XXX it would be nice to also provide inline validation to make sure
         // that the title of the page was specified and is unique
@@ -2046,6 +2049,13 @@ OC.AddWikiPage = function(extEl) {
         // changes their mind and no longer wants to add a page
         // so I don't think we need to provide a mechanism for the user to
         // cancel, which reverts back to the anchor and removes the form
-        anchor.remove();
-    }, this);
+        anchor.setVisibilityMode(Ext.Element.DISPLAY);
+        anchor.hide();
+
+        cancel.on('click', function(e, el, o) {
+          anchor.show();
+          cancel.remove();
+          Ext.get(form_div).remove();
+        }, this, {preventDefault: true});
+    }, this, {preventDefault: true});
 };
