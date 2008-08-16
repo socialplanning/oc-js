@@ -166,6 +166,7 @@ OC.debug = function(string) {
       args += " " + arguments[i]
     }
     */
+    return;
     if( typeof console != 'undefined' ) {
 	     console.log(string);
     }
