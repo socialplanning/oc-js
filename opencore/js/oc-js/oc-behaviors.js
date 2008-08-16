@@ -1587,8 +1587,6 @@ OC.GMap = function(extEl) {
         return;
     } 
 
-    var is_static_map = (mapdiv.hasClass('oc-js-static-gmap'));
-
     // Look for an existing latitude/longitude pair.
     var input_latitude = Ext.get(mapdiv.id + '-latitude');
     var input_longitude = Ext.get(mapdiv.id + '-longitude');
@@ -1601,8 +1599,10 @@ OC.GMap = function(extEl) {
 
     // If we have a form, we need to hook up our UI.
     var control_button = Ext.get('oc-map-update-button');
+    var is_static_map = false;
     if( !control_button ) {
-	OC.debug("no control button, must be a map just for viewing");
+        is_static_map = true;
+	alert("no control button, must be a map just for viewing);
     } else {
 
         // If the control button has a parent form, we'll put in a submit blocker when the text control has focus, and add some inputs.
