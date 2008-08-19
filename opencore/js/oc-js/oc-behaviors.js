@@ -1603,7 +1603,7 @@ OC.GMap = function(extEl) {
     var is_static_map = false;
     if( !control_button ) {
         is_static_map = true;
-	alert("no control button, must be a map just for viewing);
+	    alert("no control button, must be a map just for viewing");
     } else {
 
         // If the control button has a parent form, we'll put in a submit blocker when the text control has focus, and add some inputs.
