@@ -1676,6 +1676,9 @@ OC.GMap = function(extEl) {
         control_button.addListener({scope: this,
             'click': control_button.geocode
         });
+        control_text.addListener({scope: this,
+            'blur': control_button.geocode
+        });
 
         // Install onfocus and onblur handlers for the text control to handle the enter key.
         OC.SubmitBlocker.call(this, parent_form, control_text, control_button.geocode);
