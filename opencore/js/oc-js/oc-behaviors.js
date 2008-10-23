@@ -404,7 +404,38 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	    OC.debug("done breathing");
 	    
 	    break;
-	    
+
+        case "replace-by-query":
+            // elId is a misnomer in this case :P
+            var html, effects;
+            effects = command.effects;
+            html = command.html;
+
+            OC.debug("REPLACE BY QUERY " + elId + " with " + html + " using effect " + effects);
+
+            html = Ext.util.Format.trim(html);
+            var target_array = Ext.query(elId);
+            if (target_array.length == 0) {
+                break;
+            }
+
+            for (var i=0; i<target_array.length; i++) {
+                var oldNode = target_array[i];
+                var newNode = Ext.DomHelper.insertHtml('beforeBegin', oldNode, html);
+                oldNode.parentNode.removeChild(oldNode);
+
+                if ( effects == "highlight") {
+                    Ext.get(newNode).highlight();
+                } else if ( effects == "fadein" ) {
+                    Ext.get(newNode).fadeIn();
+                }
+
+                OC.breatheLife(newNode, true);
+                OC.debug("done breathing");
+
+            }
+            break;
+
 	case "copy":
 	    var html = command.html;
 	    var effects = command.effects;
