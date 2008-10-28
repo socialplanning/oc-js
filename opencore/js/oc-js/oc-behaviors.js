@@ -191,13 +191,13 @@ OC.psm = function(text, tone) {
     
     var container = Ext.get('oc-statusMessage-container');
     var message = Ext.get(Ext.query('.oc-statusMessage')[0]);
-    
+
     if (!message) {
         message = Ext.get(document.createElement('div'));
         message.addClass('oc-message');
         container.dom.appendChild(message.dom);
     }
-    
+
     /* tone: oc-message-error, oc-message-success, oc-message-warn */
     message.removeClass(new Array('oc-message-error', 'oc-message-success', 'oc-message-warn'));
     
@@ -369,9 +369,9 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	
 	switch( action ) {
 	case "error":
-        var target = Ext.get(elId);
-        target.frame();
-        break;
+            var target = Ext.get(elId);
+            target.frame();
+            break;
 
 	case "delete":
 	    OC.debug("DELETE on " + elId);
@@ -380,24 +380,24 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	    
 	case "replace":
 	    var html, effects;	    	    
-        effects = command.effects;
-        html = command.html;
+            effects = command.effects;
+            html = command.html;
 
 	    OC.debug("REPLACE " + elId + " with " + html + " using effect " + effects);
 	    
 	    html = Ext.util.Format.trim(html);
 	    var target = Ext.get(elId);
-        if (!target) {
-            // This particular target hasn't been found
-            break;
-        }
+            if (!target) {
+                // This particular target hasn't been found
+                break;
+            }
 	    var newNode = Ext.DomHelper.insertHtml('beforeBegin', target.dom, html);
 	    target.remove();
 
 	    if( effects == "highlight") {
-        Ext.get(newNode).highlight();
+                Ext.get(newNode).highlight();
 	    } else if( effects == "fadein" ) {
-        Ext.get(newNode).fadeIn();
+                Ext.get(newNode).fadeIn();
 	    }
 	    
 	    OC.breatheLife(newNode, true);
@@ -466,6 +466,12 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	    OC.breatheLife();
 	    break;
 	    
+        case "psm":
+            var text = command.text;
+            var tone = command.tone;
+            OC.psm(text, tone);
+            break;
+
 	case "prepend": // fill me in
 	    
 	default:
