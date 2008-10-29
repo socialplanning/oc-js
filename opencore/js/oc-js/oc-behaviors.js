@@ -466,12 +466,6 @@ OC.Callbacks.afterAjaxSuccess = function(o) {
 	    OC.breatheLife();
 	    break;
 	    
-        case "psm":
-            var text = command.text;
-            var tone = command.tone;
-            OC.psm(text, tone);
-            break;
-
 	case "prepend": // fill me in
 	    
 	default:
@@ -529,9 +523,9 @@ OC.FormConfirm = function(extEl) {
                 form.confirmed = true;
                 form._confirm_trigger.click();
             }
-        }, this);
+            }, this);
         return false;
-    }, this);
+        }, this);
 }
 
 /* 
