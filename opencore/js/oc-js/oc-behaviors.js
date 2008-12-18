@@ -1608,6 +1608,9 @@ OC.GMap = function(extEl) {
     // Verify JS support
     if ((typeof(GBrowserIsCompatible) == 'undefined' || (!GBrowserIsCompatible()))){
         OC.debug("GMap: Google Map API not loaded or unsupported browser");
+        if (extEl) {
+            extEl.dom.parentNode.removeChild(extEl.dom);
+        }
         return;
     }
 
@@ -1712,13 +1715,19 @@ OC.GMap = function(extEl) {
     
     }
 
-    var map = new GMap2(document.getElementById(mapdiv.id));
-    map.addControl(new GLargeMapControl());
     //map.enableScrollWheelZoom();
 
     // Try to get initialization coordinates
     var lat = input_latitude ? input_latitude.getValue() : '';
     var lon = input_longitude ? input_longitude.getValue(): '';
+
+    if (is_static_map && ((0 == lat.length) || (0 == lon.length))) {
+        mapdiv.dom.parentNode.removeChild(mapdiv.dom);
+        return;
+    }
+
+    var map = new GMap2(document.getElementById(mapdiv.id));
+    map.addControl(new GLargeMapControl());
 
     if ((0 == lat.length) || (0 == lon.length)) {
         // Lat/Lon of TOPP
