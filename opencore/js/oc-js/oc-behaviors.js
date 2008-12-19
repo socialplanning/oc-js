@@ -1622,6 +1622,9 @@ OC.GMap = function(extEl) {
         return;
     } 
 
+    // Lat/Lon of TOPP (used as a default map starting location)
+    var default_point = new GLatLng(40.738067, -74.006952);
+
     // Look for an existing latitude/longitude pair.
     var input_latitude = Ext.get(mapdiv.id + '-latitude');
     var input_longitude = Ext.get(mapdiv.id + '-longitude');
@@ -1663,6 +1666,7 @@ OC.GMap = function(extEl) {
         // Create the controls used to update the map
         var control_text = Ext.get('geolocation');
         var control_error = Ext.get('oc-map-errors');
+
         // Function that takes a geocoder response and adjusts the map accordingly
         var updateMap = function(response) {
           if (!response || response.Status.code != 200) {
@@ -1672,7 +1676,7 @@ OC.GMap = function(extEl) {
             control_error.update('');
             var place = response.Placemark[0];
             var point = new GLatLng(place.Point.coordinates[1],
-                                place.Point.coordinates[0]);
+                                    place.Point.coordinates[0]);
             var marker = new GMarker(point, {draggable: !is_static_map});
             input_latitude.dom.value = point.lat();
             input_longitude.dom.value = point.lng();
@@ -1695,7 +1699,7 @@ OC.GMap = function(extEl) {
                  {maxWidth: 180}); // @@ Broken! implicit minimum of 200!
           }
         }
-    
+
         // We need a function that will take the desired text input, and submit it to Google
         // Maps.  Once we have it, we will set it up so that a click of the button or hitting
         // enter will perform the work.  In order to handle pressing enter, whenever the text
@@ -1703,7 +1707,16 @@ OC.GMap = function(extEl) {
         // submit and instead performs the geocoding.  We remove this handler whenever the
         // text control loses focus.
         control_button.geocode = function() {
-            geocoder.getLocations(control_text.dom.value, updateMap);
+            var text = control_text.dom.value;
+            text = Ext.util.Format.trim(text);
+            if (text.length == 0) { 
+                input_latitude.dom.value = '';
+                input_longitude.dom.value = '';
+                control_text.value = text;
+                map.setCenter(default_point, 15);
+            } else {
+                geocoder.getLocations(text, updateMap);
+            }
         }
         // Install click handler for the button
         control_button.addListener({scope: this,
@@ -1731,7 +1744,7 @@ OC.GMap = function(extEl) {
 
     if ((0 == lat.length) || (0 == lon.length)) {
         // Lat/Lon of TOPP
-        var center = new GLatLng(40.738067, -74.006952);
+        var center = default_point;
     } else {
         // We have preexisting coordinates, so we'll make a marker.
         var center = new GLatLng(lat, lon);
