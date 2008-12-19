@@ -1740,7 +1740,7 @@ OC.GMap = function(extEl) {
     }
 
     var map = new GMap2(document.getElementById(mapdiv.id));
-    map.addControl(new GLargeMapControl());
+    map.addControl(new GSmallMapControl());
 
     if ((0 == lat.length) || (0 == lon.length)) {
         // Lat/Lon of TOPP
