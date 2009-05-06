@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.6.3'
+version = '0.6.4dev'
 
 f = open('README.txt')
 readme = "".join(f.readlines())
