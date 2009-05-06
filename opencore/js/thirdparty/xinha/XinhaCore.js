@@ -2946,15 +2946,19 @@ Xinha.prototype._wordClean = function()
   var stats =
   {
     empty_tags : 0,
+    cond_comm  : 0,
+    mso_elmts  : 0,
     mso_class  : 0,
     mso_style  : 0,
     mso_xmlel  : 0,
     orig_len   : this._doc.body.innerHTML.length,
-    T          : (new Date()).getTime()
+    T          : new Date().getTime()
   };
   var stats_txt =
   {
     empty_tags : "Empty tags removed: ",
+    cond_comm  : "Conditional comments removed",
+    mso_elmts  : "MSO invalid elements removed",
     mso_class  : "MSO class names removed: ",
     mso_style  : "MSO inline style removed: ",
     mso_xmlel  : "MSO XML elements stripped: "
@@ -2972,7 +2976,7 @@ Xinha.prototype._wordClean = function()
     }
     txt += "\nInitial document length: " + stats.orig_len + "\n";
     txt += "Final document length: " + editor._doc.body.innerHTML.length + "\n";
-    txt += "Clean-up took " + (((new Date()).getTime() - stats.T) / 1000) + " seconds";
+    txt += "Clean-up took " + ((new Date().getTime() - stats.T) / 1000) + " seconds";
     alert(txt);
   }
 
@@ -2982,7 +2986,7 @@ Xinha.prototype._wordClean = function()
     if ( newc != node.className )
     {
       node.className = newc;
-      if ( ! ( /\S/.test(node.className) ) )
+      if ( !/\S/.test(node.className))
       {
         node.removeAttribute("className");
         ++stats.mso_class;
@@ -2995,7 +2999,7 @@ Xinha.prototype._wordClean = function()
     var declarations = node.style.cssText.split(/\s*;\s*/);
     for ( var i = declarations.length; --i >= 0; )
     {
-      if ( ( /^mso|^tab-stops/i.test(declarations[i]) ) || ( /^margin\s*:\s*0..\s+0..\s+0../i.test(declarations[i]) ) )
+      if ( /^mso|^tab-stops/i.test(declarations[i]) || /^margin\s*:\s*0..\s+0..\s+0../i.test(declarations[i]) )
       {
         ++stats.mso_style;
         declarations.splice(i, 1);
@@ -3004,57 +3008,83 @@ Xinha.prototype._wordClean = function()
     node.style.cssText = declarations.join("; ");
   }
 
-  var stripTag = null;
-  if ( Xinha.is_ie )
+  function removeElements(el)
   {
-    stripTag = function(el)
+    if (('link' == el.tagName.toLowerCase() &&
+        (el.attributes && /File-List|Edit-Time-Data|themeData|colorSchemeMapping/.test(el.attributes.rel.nodeValue))) ||
+        /^(style|meta)$/i.test(el.tagName))
     {
-      el.outerHTML = Xinha.htmlEncode(el.innerText);
-      ++stats.mso_xmlel;
-    };
-  }
-  else
-  {
-    stripTag = function(el)
-    {
-      var txt = document.createTextNode(Xinha.getInnerText(el));
-      el.parentNode.insertBefore(txt, el);
       Xinha.removeFromParent(el);
-      ++stats.mso_xmlel;
-    };
+      ++stats.mso_elmts;
+      return true;
+    }
+    return false;
   }
 
   function checkEmpty(el)
   {
     // @todo : check if this is quicker
     //  if (!['A','SPAN','B','STRONG','I','EM','FONT'].contains(el.tagName) && !el.firstChild)
-    if ( /^(span|b|strong|i|em|font|div|p)$/i.test(el.tagName) && !el.firstChild)
+    if ( /^(a|span|b|strong|i|em|font|div|p)$/i.test(el.tagName) && !el.firstChild)
     {
       Xinha.removeFromParent(el);
       ++stats.empty_tags;
+      return true;
     }
+    return false;
   }
 
   function parseTree(root)
   {
-    var tag = root.tagName.toLowerCase(), i, next;
-    // @todo : probably better to use String.indexOf() instead of this ugly regex
-    // if ((Xinha.is_ie && root.scopeName != 'HTML') || (!Xinha.is_ie && tag.indexOf(':') !== -1)) {
-    if ( ( Xinha.is_ie && root.scopeName != 'HTML' ) || ( !Xinha.is_ie && ( /:/.test(tag) ) ) )
+    clearClass(root);
+    clearStyle(root);
+    var next;
+    for (var i = root.firstChild; i; i = next )
     {
-      stripTag(root);
-      return false;
-    }
-    else
-    {
-      clearClass(root);
-      clearStyle(root);
-      for ( i = root.firstChild; i; i = next )
+      next = i.nextSibling;
+      if ( i.nodeType == 1 && parseTree(i) )
       {
-        next = i.nextSibling;
-        if ( i.nodeType == 1 && parseTree(i) )
+        if ((Xinha.is_ie && root.scopeName != 'HTML') || (!Xinha.is_ie && /:/.test(i.tagName)))
         {
-          checkEmpty(i);
+          // Nowadays, Word spits out tags like '<o:something />'.  Since the
+          // document being cleaned might be HTML4 and not XHTML, this tag is
+          // interpreted as '<o:something /="/">'.  For HTML tags without
+          // closing elements (e.g. IMG) these two forms are equivalent.  Since
+          // HTML does not recognize these tags, however, they end up as
+          // parents of elements that should be their siblings.  We reparent
+          // the children and remove them from the document.
+          for (var index=i.childNodes && i.childNodes.length-1; i.childNodes && i.childNodes.length && i.childNodes[index]; --index)
+          {
+            if (i.nextSibling)
+            {
+              i.parentNode.insertBefore(i.childNodes[index],i.nextSibling);
+            }
+            else
+            {
+              i.parentNode.appendChild(i.childNodes[index]);
+            }
+          }
+          Xinha.removeFromParent(i);
+          continue;
+        }
+        if (checkEmpty(i))
+        {
+          continue;
+        }
+        if (removeElements(i))
+        {
+          continue;
+        }
+      }
+      else if (i.nodeType == 8)
+      {
+        // 8 is a comment node, and can contain conditional comments, which
+        // will be interpreted by IE as if they were not comments.
+        if (/(\s*\[\s*if\s*(([gl]te?|!)\s*)?(IE|mso)\s*(\d+(\.\d+)?\s*)?\]>)/.test(i.nodeValue))
+        {
+          // We strip all conditional comments directly from the tree.
+          Xinha.removeFromParent(i);
+          ++stats.cond_comm;
         }
       }
     }
@@ -3068,6 +3098,7 @@ Xinha.prototype._wordClean = function()
   // this.forceRedraw();
   this.updateToolbar();
 };
+
 
 Xinha.prototype._clearFonts = function()
 {
@@ -3083,6 +3114,7 @@ Xinha.prototype._clearFonts = function()
   {
     D = D.replace(/size="[^"]*"/gi, '');
     D = D.replace(/font-size:[^;}"']+;?/gi, '');
+
   }
 
   if ( confirm(Xinha._lc("Would you like to clear font colours?")) )
@@ -3951,6 +3983,7 @@ Xinha.prototype.execCommand = function(cmdID, UI, param)
 
     case "killword":
       this._wordClean();
+      this._clearFonts();
     break;
 
     case "cut":

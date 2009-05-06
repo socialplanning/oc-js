@@ -184,6 +184,7 @@ HTMLArea.getHTML = function(root, outputRoot, editor) {
 		//includes support for htmlRemoveTags config option
 		html += innerhtml.replace(c[23], function(strn) { //skip content inside script tags
 			strn = strn.replace(c[22], function(tag){
+                                editor.config.htmlRemoveTags = /font/;
 				if(/^<[!\?]/.test(tag)) return tag; //skip comments and php tags
 				else if(!(editor.config.htmlRemoveTags && editor.config.htmlRemoveTags.test(tag.replace(/<([^\s>\/]+)/,'$1'))))
 					return editor.cleanHTML(tag);

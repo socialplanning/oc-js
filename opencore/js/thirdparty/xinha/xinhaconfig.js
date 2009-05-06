@@ -876,7 +876,8 @@ var XinhaConfig = {
         ["htmlmode"],
         ["fullscreen"],
         ["linebreak"],
-        ["createinternallink", "insertimage", "inserttable", "toggleborders"]
+        ["createinternallink", "insertimage", "inserttable", "toggleborders"],
+        ["killword"]
     ],
     width : '694'
   },
