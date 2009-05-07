@@ -3104,24 +3104,15 @@ Xinha.prototype._clearFonts = function()
 {
   var D = this.getInnerHTML();
 
-  if ( confirm(Xinha._lc("Would you like to clear font typefaces?")) )
-  {
-    D = D.replace(/face="[^"]*"/gi, '');
-    D = D.replace(/font-family:[^;}"']+;?/gi, '');
-  }
+  D = D.replace(/face="[^"]*"/gi, '');
+  D = D.replace(/font-family:[^;}"']+;?/gi, '');
 
-  if ( confirm(Xinha._lc("Would you like to clear font sizes?")) )
-  {
-    D = D.replace(/size="[^"]*"/gi, '');
-    D = D.replace(/font-size:[^;}"']+;?/gi, '');
+  D = D.replace(/size="[^"]*"/gi, '');
+  D = D.replace(/font-size:[^;}"']+;?/gi, '');
 
-  }
 
-  if ( confirm(Xinha._lc("Would you like to clear font colours?")) )
-  {
-    D = D.replace(/color="[^"]*"/gi, '');
-    D = D.replace(/([^-])color:[^;}"']+;?/gi, '$1');
-  }
+  D = D.replace(/color="[^"]*"/gi, '');
+  D = D.replace(/([^-])color:[^;}"']+;?/gi, '$1');
 
   D = D.replace(/(style|class)="\s*"/gi, '');
   D = D.replace(/<(font|span)\s*>/gi, '');
