@@ -1,6 +1,10 @@
 0.6.5 dev
 =========
 
+ * added jquery 1.3.2 so we can maybe start transitioning to it, or at
+   least make one-off pages that use it.  For now, it's recommended to
+   only use it on pages that need it to reduce overhead.  (pw)
+
 
 0.6.4 (2009-05-07)
 ==================

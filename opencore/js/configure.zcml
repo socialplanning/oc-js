@@ -16,4 +16,10 @@
     directory="thirdparty/yui-ext"
     />
 
+  <browser:resourceDirectory
+    name="jquery"
+    directory="thirdparty/jquery"
+    />
+
+
 </configure>
