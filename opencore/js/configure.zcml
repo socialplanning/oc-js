@@ -2,11 +2,6 @@
     xmlns:browser="http://namespaces.zope.org/browser">
 
   <browser:resourceDirectory
-    name="oc-js"
-    directory="oc-js"
-    />
-
-  <browser:resourceDirectory
     name="xinha"
     directory="thirdparty/xinha"
     />
