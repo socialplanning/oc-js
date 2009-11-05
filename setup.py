@@ -12,10 +12,6 @@ setup(name='oc-js',
       long_description=readme,
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
-        "Framework :: Zope3",
-        "Framework :: YUI-ext",
-        "Programming Language :: Javascript",
-        "Topic :: Software Development :: Libraries :: Python Modules",
         ],
       keywords='javascript zcml',
       author='opencore dev team',
