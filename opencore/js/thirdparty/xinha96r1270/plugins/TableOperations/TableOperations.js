@@ -15,9 +15,11 @@
 // Object that will encapsulate all the table operations provided by
 // HTMLArea-3.0 (except "insert table" which is included in the main file)
 Xinha.Config.prototype.TableOperations = {
-  'showButtons' : true // Set to false to hide all but inserttable and toggleborders buttons on the toolbar
+  'showButtons' : true, // Set to false to hide all but inserttable and toggleborders buttons on the toolbar
   // this is useful if you have the ContextMenu plugin and want to save toolbar space
   // (the context menu can perform all the button operations)
+  'forceToolbarLineBreak': true // By default TableOperations puts all of its buttons on their own row.
+  // Set to false to prevent this and instead just append the buttons without injecting a linebreak.
 }
 
 function TableOperations(editor) {
@@ -32,8 +34,12 @@ function TableOperations(editor) {
   // Remove existing inserttable and toggleborders, we will replace it in our group  
   cfg.removeToolbarElement(' inserttable toggleborders '); 
   
-  var toolbar = ["linebreak", "inserttable", "toggleborders"];
-  
+  var toolbar;
+  if( cfg.TableOperations.forceToolbarLineBreak ) {
+    toolbar = ["linebreak", "inserttable", "toggleborders"];
+  } else { 
+    toolbar = ["inserttable", "toggleborders"];
+  }  
   
   for (var i = 0; i < bl.length; ++i) {
     var btn = bl[i];
