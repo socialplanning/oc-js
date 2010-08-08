@@ -2389,7 +2389,7 @@ Xinha.prototype.generate = function ()
     {
       switch (toolbar[i][j])
       {
-        case "popupeditor":
+        case "popupeditor": case "fullscreen":
           if (!this.plugins.FullScreen) 
           {
             editor.registerPlugin('FullScreen');
