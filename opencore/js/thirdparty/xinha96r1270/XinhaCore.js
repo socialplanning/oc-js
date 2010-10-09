@@ -5358,6 +5358,8 @@ Xinha.prototype.execCommand = function(cmdID, UI, param)
   switch (cmdID)
   {
     case "htmlmode":
+      this._textArea.style.visibility = "visible"
+      this._textArea.style.overflow = "auto"    
       this.setMode();
     break;
 
