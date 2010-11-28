@@ -1,3 +1,11 @@
+
+0.8 (2010-11-28)
+================
+
+ * added thirdparty/xinha97-pre directory, imported from http://svn.xinha.org/trunk
+   at r1296.  opencore itself will register the resource directory, and
+   will provide its own xinha configuration file.
+
 0.7 (2009-11-05)
 ================
 

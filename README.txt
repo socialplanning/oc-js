@@ -1,7 +1,3 @@
-=======
- oc-js
-=======
-
 This is the omnibus package for general opencore relate javascript and
 related maintenance scripts and utilities (packing, compression, etc).
 
